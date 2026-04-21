@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TaxonomyVocabularyEnum;
+use App\Http\Requests\LiteracyLevelRequest;
 use App\Http\Requests\SubjectAreaRequest;
+use App\Http\Requests\ResourceTypeRequest;
 use App\Models\TaxonomyHierarchy;
 use App\Models\TaxonomyTerm;
 use App\Models\TaxonomyVocabulary;
@@ -241,29 +243,7 @@ class TaxonomyController extends Controller
 
         try {
             $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
-            $parents = $request->input('parent', []);
-            $weights = $request->input('weight', []);
-            $names = $request->input('name', []);
-            $termIds = $request->input('id', []);
-            $tnid = $request->tnid ?? 0;
-
-            foreach ($names as $language => $name) {
-                $name = trim($name);
-                if (! empty($name)) {
-                    $weight = $weights[$language] ?? null;
-                    $termId = $termIds[$language] ?? null;
-                    $parentId = $parents[$language] ?? 0;
-
-                    $term = $this->saveSubjectAreaTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId);
-
-                    if ($tnid == 0) {
-                        $tnid = $term->id;
-
-                        $term->tnid = $tnid;
-                        $term->save();
-                    }
-                }
-            }
+            $this->storeOrUpdateTranslation($request, $vid);
 
             DB::commit();
 
@@ -272,6 +252,32 @@ class TaxonomyController extends Controller
             DB::rollback();
 
             return back()->with('error', 'Subject Area was not '.$operation.'!'.$e->getMessage());
+        }
+    }
+
+    private function storeOrUpdateTranslation($request, $vid){
+        $parents = $request->input('parent', []);
+        $weights = $request->input('weight', []);
+        $names = $request->input('name', []);
+        $termIds = $request->input('id', []);
+        $tnid = $request->tnid ?? 0;
+
+        foreach ($names as $language => $name) {
+            $name = trim($name);
+            if (! empty($name)) {
+                $weight = $weights[$language] ?? null;
+                $termId = $termIds[$language] ?? null;
+                $parentId = $parents[$language] ?? 0;
+
+                $term = $this->saveSubjectAreaTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId);
+
+                if ($tnid == 0) {
+                    $tnid = $term->id;
+
+                    $term->tnid = $tnid;
+                    $term->save();
+                }
+            }
         }
     }
 
@@ -300,5 +306,107 @@ class TaxonomyController extends Controller
         }
 
         return $term;
+    }
+
+    public function resourceTypes(): View
+    {
+        $terms = TaxonomyTerm::where('vid', TaxonomyVocabularyEnum::ResourceType->value)->get();
+        $languages = LaravelLocalization::getSupportedLocales();
+
+        $resourceTypes = $terms->groupBy('tnid')->map(function ($translations) {
+            return $translations->keyBy('language')->map(fn ($t) => $t->name);
+        });
+
+        return view('admin.taxonomy.resource-type.index', compact('resourceTypes', 'languages'));
+    }
+
+    public function editOrCreateResourceType($tnid = null): View
+    {
+        $vid = TaxonomyVocabularyEnum::ResourceType->value;
+
+        if ($tnid !== null && $tnid > 0 && TaxonomyTerm::where('vid', $vid)->where('tnid', $tnid)->doesntExist()) {
+            abort(404);
+        }
+
+        $terms = TaxonomyTerm::with('taxonomyHierarchy')->where(['vid' => $vid, 'tnid' => $tnid])->get();
+        $languages = LaravelLocalization::getSupportedLocales();
+        $parents = TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get();
+
+        $terms = $terms->keyBy('language')->map(function ($term) {
+            return ['term' => $term];
+        });
+
+        return view('admin.taxonomy.resource-type.edit', compact('parents', 'terms', 'languages', 'tnid'));
+    }
+
+    public function storeOrUpdateResourceType(ResourceTypeRequest $request): RedirectResponse
+    {
+        $operation = $request->tnid ? 'updated' : 'created';
+        DB::beginTransaction();
+
+        try {
+            $vid = TaxonomyVocabularyEnum::ResourceType->value;
+
+            $this->storeOrUpdateTranslation($request, $vid);
+
+            DB::commit();
+
+            return redirect()->route('resource_types.index')->with('success', "Resource Type $operation successfully!");
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return back()->with('error', 'Resource Type was not '.$operation.'!'.$e->getMessage());
+        }
+    }
+
+    public function literacyLevels(): View
+    {
+        $terms = TaxonomyTerm::where('vid', TaxonomyVocabularyEnum::ResourceLevels->value)->get();
+        $languages = LaravelLocalization::getSupportedLocales();
+
+        $literacyLevels = $terms->groupBy('tnid')->map(function ($translations) {
+            return $translations->keyBy('language')->map(fn ($t) => $t->name);
+        });
+
+        return view('admin.taxonomy.literacy-level.index', compact('literacyLevels', 'languages'));
+    }
+
+    public function editOrCreateLiteracyLevel($tnid = null): View
+    {
+        $vid = TaxonomyVocabularyEnum::ResourceLevels->value;
+
+        if ($tnid !== null && $tnid > 0 && TaxonomyTerm::where('vid', $vid)->where('tnid', $tnid)->doesntExist()) {
+            abort(404);
+        }
+
+        $terms = TaxonomyTerm::with('taxonomyHierarchy')->where(['vid' => $vid, 'tnid' => $tnid])->get();
+        $languages = LaravelLocalization::getSupportedLocales();
+        $parents = TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get();
+
+        $terms = $terms->keyBy('language')->map(function ($term) {
+            return ['term' => $term];
+        });
+
+        return view('admin.taxonomy.literacy-level.edit', compact('parents', 'terms', 'languages', 'tnid'));
+    }
+
+    public function storeOrUpdateLiteracyLevel(LiteracyLevelRequest $request): RedirectResponse
+    {
+        $operation = $request->tnid ? 'updated' : 'created';
+        DB::beginTransaction();
+
+        try {
+            $vid = TaxonomyVocabularyEnum::ResourceLevels->value;
+
+            $this->storeOrUpdateTranslation($request, $vid);
+
+            DB::commit();
+
+            return redirect()->route('literacy_levels.index')->with('success', "Resource Literacy Level $operation successfully!");
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return back()->with('error', 'Resource Literacy Level was not '.$operation.'!'.$e->getMessage());
+        }
     }
 }
