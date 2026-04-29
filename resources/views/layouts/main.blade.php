@@ -22,27 +22,20 @@
 
     @vite(['resources/assets/sass/app.scss', 'resources/assets/js/ddl.jsx'])
 
-    @if (Lang::locale() != 'en')
-        <link rel="stylesheet" href="{{ asset('css/local.css') }}">
-    @endif
     <script>
         let baseUrl = "{{ url('/') }}";
         let localLanguage = "{{ config('app.locale') }}";
     </script>
 
-    @stack('styles')
     @if (App::environment('production'))
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-6207513-43"></script>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZK5S8JQJN"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
+            function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'UA-6207513-43');
+            gtag('config', 'G-QZK5S8JQJN');
         </script>
     @endif
 
@@ -63,8 +56,8 @@
         g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
-    @yield('style')
     <!-- End Matomo Code -->
+    @stack('styles')
 </head>
 
 <body>
@@ -76,7 +69,7 @@
             window.fbAsyncInit = function() {
                 FB.init({
                     xfbml: true,
-                    version: 'v3.2'
+                    version: 'v19.0'
                 });
             };
 
@@ -85,6 +78,7 @@
                 if (d.getElementById(id)) return;
                 js = d.createElement(s);
                 js.id = id;
+                js.async = true;
                 js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
                 fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));
@@ -99,21 +93,21 @@
         @include('layouts.banner')
         @yield('search')
         <main>
-            <?php
-            $lang = config('app.locale');
-            $questions_count = \App\Models\SurveyQuestion::getPublishedQuestions($lang)->count();
-            ?>
-            @if ($questions_count != 0)
-                @if (Request::is(Lang::locale() . '/home'))
-                    @include('../survey/survey_view')
-                @elseif (Request::is(Lang::locale()))
-                    @include('../survey/survey_view')
-                @elseif (Request::is(Lang::locale() . '/resource/*'))
-                    @include('../survey/survey_view')
-                @elseif (Request::is(Lang::locale() . '/resources/*'))
-                    @include('../survey/survey_view')
-                @endif
-            @endif
+{{--            @php--}}
+{{--            $lang = config('app.locale');--}}
+{{--            $questions_count = \App\Models\SurveyQuestion::getPublishedQuestions($lang)->count();--}}
+{{--            @endphp--}}
+{{--            @if ($questions_count != 0)--}}
+{{--                @if (Request::is(Lang::locale() . '/home'))--}}
+{{--                    @include('../survey/survey_view')--}}
+{{--                @elseif (Request::is(Lang::locale()))--}}
+{{--                    @include('../survey/survey_view')--}}
+{{--                @elseif (Request::is(Lang::locale() . '/resource/*'))--}}
+{{--                    @include('../survey/survey_view')--}}
+{{--                @elseif (Request::is(Lang::locale() . '/resources/*'))--}}
+{{--                    @include('../survey/survey_view')--}}
+{{--                @endif--}}
+{{--            @endif--}}
 
             @yield('content')
             @if (session()->has('alert'))
@@ -122,10 +116,8 @@
 
         </main>
         @include('layouts.footer')
-        <!-- Optional JavaScript -->
     </div>
     @stack('scripts')
-    @yield('script')
 
     @if (Auth::check() && Auth::user()->profile->gender == null)
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" 
@@ -155,7 +147,6 @@
                 </div>
             </div>
         </div>
-        @sleep(300)
         <button type="button" class="btn btn-primary open-user-gender-modal d-none" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
         <script>
             setTimeout(() => {
