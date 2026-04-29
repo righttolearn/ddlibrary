@@ -1,6 +1,15 @@
-// Variables and SCSS
-@import "variables";
-@import 'footer';
+// Fonts
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/900.css';
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/noto-kufi-arabic/400.css';
+@import '@fontsource/noto-kufi-arabic/700.css';
+
+// Variables
+@import 'variables';
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
@@ -13,3 +22,8 @@
 
 //jQuery UI
 @import 'jquery-ui/themes/base/all.css';
+
+// Custom and mis
+@import 'footer';
+@import 'forms';
+@import 'navbar';

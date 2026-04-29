@@ -1,0 +1,10 @@
+// Proper corner radius for RTL - search
+[dir="rtl"] {
+  .input-group:not(.has-validation) > .form-control:first-child {
+    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0 !important;
+  }
+
+  .input-group > .btn:last-child {
+    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius) !important;
+  }
+}
