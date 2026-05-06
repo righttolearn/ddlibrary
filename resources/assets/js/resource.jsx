@@ -117,12 +117,10 @@ function displaySelectedImage(imageUrl) {
 }
 
 function closeModal() {
-    var modalElement = document.getElementById('exampleModal');
-    var modal = bootstrap.Modal.getInstance(modalElement);
-
-    if (modal) {
-        modal.hide();
-    }
+  var modalElement = document.getElementById('exampleModal');
+  var modal = bootstrap.Modal.getInstance(modalElement) 
+           ?? bootstrap.Modal.getOrCreateInstance(modalElement);
+  modal.hide();
 }
 
 function selectNewImage() {
@@ -169,24 +167,16 @@ function uploadNewImage() {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response) {
+        success: function success(response) {
             if (response.success) {
                 $('#resource_file_id').val(response.resource_file_id);
                 displaySelectedImage(response.imageUrl);
-
-                // Clear the form
                 $('#upload-form')[0].reset();
-
-                // Display success message
                 alert('Image uploaded successfully!');
-
-                // Close the modal
-                $('#file-manager-modal').hide();
-
-                // Refresh the image list
+                
+                closeModal();
+                
                 searchImages();
-            } else {
-                alert('Error uploading image: ' + response.message);
             }
         },
         error: function(xhr) {
