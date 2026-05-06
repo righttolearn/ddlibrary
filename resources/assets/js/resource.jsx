@@ -24,7 +24,6 @@ function setActive(option) {
 setActive('select');
 
 function searchImages(url = null) {
-    fullURL = url ? url : `${baseUrl}/search-images`;
     const subjectArea = document.getElementById('subject_areas').value;
     const search = document.getElementById('search-input').value;
 
@@ -39,7 +38,7 @@ function searchImages(url = null) {
         language: localLanguage
     });
 
-    fullURL = url ? url : `${baseUrl}/search-images?${params.toString()}`
+    let fullURL = url ? url : `${baseUrl}/search-images?${params.toString()}`
 
     fetch(`${fullURL}`, {
             method: 'GET'
