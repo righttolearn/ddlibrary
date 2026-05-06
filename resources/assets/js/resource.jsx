@@ -1,6 +1,3 @@
-import * as bootstrap from 'bootstrap';
-window.bootstrap = bootstrap;
-
 function setActive(option) {
     // Remove active class from all buttons
     document.querySelectorAll('.image-manager-options .btn').forEach(btn => {
