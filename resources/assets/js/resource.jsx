@@ -101,7 +101,7 @@ function selectImage(id, url) {
     if (firstElement) {
         firstElement.classList.add('bg-success');
     }
-    closeModal();
+    bootstrap.Modal.getInstance(document.getElementById('exampleModal')).hide();
 
 }
 
@@ -115,13 +115,6 @@ function displaySelectedImage(imageUrl) {
     // Show the selected image preview
     const selectedImagePreview = document.getElementById('selected-image-preview');
     selectedImagePreview.style.display = 'block'; // Change to 'block' to show the element
-}
-
-function closeModal() {
-  var modalElement = document.getElementById('exampleModal');
-  var modal = bootstrap.Modal.getInstance(modalElement) 
-           ?? bootstrap.Modal.getOrCreateInstance(modalElement);
-  modal.hide();
 }
 
 function selectNewImage() {
@@ -175,7 +168,7 @@ function uploadNewImage() {
                 $('#upload-form')[0].reset();
                 alert('Image uploaded successfully!');
                 
-                closeModal();
+                bootstrap.Modal.getInstance(document.getElementById('exampleModal')).hide();
                 
                 searchImages();
             }
