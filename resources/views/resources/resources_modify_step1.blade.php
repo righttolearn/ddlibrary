@@ -263,9 +263,9 @@
                                             <option value="{{ $creativeCommon->id }}">{{ $creativeCommon->name }}
                                             </option>
                                         @endforeach
-                                        <input type="hidden" name="language" value="{{ config('app.locale') }}">
                                     </select>
                                 </div>
+                                <input type="hidden" name="language" value="{{ config('app.locale') }}">
                                 <button type="submit" class="btn btn-primary">@lang('Upload')</button>
                             </form>
                         </div>
