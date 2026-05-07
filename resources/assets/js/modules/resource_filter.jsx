@@ -1,6 +1,6 @@
 function appendOptions(selectElement, data) {
   if (!selectElement || !data) return
-
+  selectElement.append(new Option("", ""));
   for (const optionName in data) {
     const optionId = data[optionName]
     selectElement.append(new Option(optionName, optionId))
