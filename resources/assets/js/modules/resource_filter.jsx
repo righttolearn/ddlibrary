@@ -1,9 +1,15 @@
+function formatOptionLabel(label) {
+  const name = String(label || '').toLowerCase()
+
+  return name.charAt(0).toUpperCase() + name.slice(1)
+}
+
 function appendOptions(selectElement, data) {
   if (!selectElement || !data) return
   selectElement.append(new Option("", ""));
   for (const optionName in data) {
     const optionId = data[optionName]
-    selectElement.append(new Option(optionName, optionId))
+    selectElement.append(new Option(formatOptionLabel(optionName), optionId))
   }
 }
 
