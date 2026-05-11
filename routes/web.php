@@ -217,16 +217,6 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
             Route::get('subject-areas/{vid}', 'subjectAreas')->name('subject_areas.index');
             Route::get('subject-area/edit-or-create/{vid}/{tnid?}', 'editOrCreateSubjectArea')->where('tnid', '[1-9][0-9]*')->name('subject_area.edit_or_create');
             Route::post('subject-area/{vid}', 'storeOrUpdateSubjectArea')->name('subject_area.store_or_update');
-
-            // Resource Types routes
-            Route::get('resource-types', 'resourceTypes')->name('resource_types.index');
-            Route::get('resource-type/edit-or-create/{tnid?}', 'editOrCreateResourceType')->where('tnid', '[1-9][0-9]*')->name('resource_types.edit_or_create');
-            Route::post('resource-type', 'storeOrUpdateResourceType')->name('resource_types.store_or_update');
-
-            // Resource Literacy Levels routes
-            Route::get('literacy-levels', 'literacyLevels')->name('literacy_levels.index');
-            Route::get('literacy-level/edit-or-create/{tnid?}', 'editOrCreateLiteracyLevel')->where('tnid', '[1-9][0-9]*')->name('literacy_levels.edit_or_create');
-            Route::post('literacy-level', 'storeOrUpdateLiteracyLevel')->name('literacy_levels.store_or_update');
         });
 
         // Taxonomy Vocabulary
