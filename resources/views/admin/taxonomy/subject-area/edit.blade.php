@@ -50,11 +50,13 @@
                                             <td>
                                                 <select name="parent[{{ $localeCode }}]" class="form-control">
                                                     <option value="0">...</option>
-                                                    @foreach ($parents->where('language', $localeCode) as $parent)
-                                                        <option value="{{ $parent->id }}" @selected($data['term']['taxonomyHierarchy']['parent'] == $parent->id)>
-                                                            {{ $parent->name }}
-                                                        </option>
-                                                    @endforeach
+                                                    @if($parents)
+                                                        @foreach ($parents->where('language', $localeCode) as $parent)
+                                                            <option value="{{ $parent->id }}" @selected($data['term']['taxonomyHierarchy']['parent'] == $parent->id)>
+                                                                {{ $parent->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
                                                 </select>
                                             </td>
                                         </tr>

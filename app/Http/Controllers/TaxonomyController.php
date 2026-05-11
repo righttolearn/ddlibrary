@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TaxonomyVocabularyEnum;
-use App\Http\Requests\LiteracyLevelRequest;
 use App\Http\Requests\SubjectAreaRequest;
-use App\Http\Requests\ResourceTypeRequest;
 use App\Models\TaxonomyHierarchy;
 use App\Models\TaxonomyTerm;
 use App\Models\TaxonomyVocabulary;
@@ -229,7 +227,7 @@ class TaxonomyController extends Controller
 
         $terms = TaxonomyTerm::with('taxonomyHierarchy')->where(['vid' => $vid, 'tnid' => $tnid])->get();
         $languages = LaravelLocalization::getSupportedLocales();
-        $parents = TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get();
+        $parents = ($vid != TaxonomyVocabularyEnum::ResourceType->value) ? TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get() : null;
 
         $terms = $terms->keyBy('language')->map(function ($term) {
             return ['term' => $term];
