@@ -205,22 +205,25 @@ class TaxonomyController extends Controller
         return redirect('/admin/taxonomy')->with('success', 'Taxonomy item added successfully!');
     }
 
-    public function subjectAreas(): View
+    public function subjectAreas($vid): View
     {
-        $terms = TaxonomyTerm::where('vid', TaxonomyVocabularyEnum::ResourceSubject->value)->get();
+        $terms = TaxonomyTerm::where('vid', $vid)->get();
         $languages = LaravelLocalization::getSupportedLocales();
 
         $subjectAreas = $terms->groupBy('tnid')->map(function ($translations) {
             return $translations->keyBy('language')->map(fn ($t) => $t->name);
         });
 
-        return view('admin.taxonomy.subject-area.index', compact('subjectAreas', 'languages'));
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first();
+
+
+
+        return view('admin.taxonomy.subject-area.index', compact('subjectAreas', 'languages', 'vid', 'vocabulary'));
     }
 
-    public function editOrCreateSubjectArea($tnid = null)
+    public function editOrCreateSubjectArea($vid, $tnid = null)
     {
-        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
-
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first(); 
         if ($tnid !== null && $tnid > 0 && TaxonomyTerm::where('vid', $vid)->where('tnid', $tnid)->doesntExist()) {
             abort(404);
         }
@@ -233,25 +236,26 @@ class TaxonomyController extends Controller
             return ['term' => $term];
         });
 
-        return view('admin.taxonomy.subject-area.edit', compact('parents', 'terms', 'languages', 'tnid'));
+        return view('admin.taxonomy.subject-area.edit', compact('parents', 'terms', 'languages', 'tnid', 'vid', 'vocabulary'));
     }
 
-    public function storeOrUpdateSubjectArea(SubjectAreaRequest $request): RedirectResponse
+    public function storeOrUpdateSubjectArea(SubjectAreaRequest $request, $vid): RedirectResponse
     {
         $operation = $request->tnid ? 'updated' : 'created';
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first(); 
+
         DB::beginTransaction();
 
         try {
-            $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
             $this->storeOrUpdateTranslation($request, $vid);
 
             DB::commit();
 
-            return redirect()->route('subject_areas.index')->with('success', "Subject Area $operation successfully!");
+            return redirect()->route('subject_areas.index', ['vid' => $vid])->with('success', "$vocabulary->name $operation successfully!");
         } catch (\Exception $e) {
             DB::rollback();
 
-            return back()->with('error', 'Subject Area was not '.$operation.'!'.$e->getMessage());
+            return back()->with('error', "$vocabulary->name was not $operation.". $e->getMessage());
         }
     }
 

@@ -120,9 +120,9 @@
         <a class="collapse-item" href="{{ URL::to('admin/contacts') }}">Contacts</a>
         <a class="collapse-item" href="{{ URL::to('admin/menu') }}">Menu</a>
         <a class="collapse-item" href="{{ URL::to('admin/taxonomy') }}">Taxonomys</a>
-        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/subject-areas') }}">Subject Area</a>
-        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/resource-types') }}">Resource Type</a>
-        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/literacy-levels') }}">Literacy Level</a>
+        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/subject-areas/8') }}">Subject Area</a>
+        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/subject-areas/7') }}">Resource Type</a>
+        <a class="collapse-item" href="{{ URL::to('admin/taxonomy/subject-areas/13') }}">Literacy Level</a>
         <a class="collapse-item" href="{{ URL::to('admin/vocabulary') }}">Vocabulary</a>
         <a class="collapse-item" href="{{ URL::to('admin/settings') }}">Configurations</a>
     </div>

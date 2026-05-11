@@ -6,15 +6,15 @@
                 <li class="breadcrumb-item">
                     <a href="{{ URL::to('admin') }}">Dashboard</a>
                 </li>
-                <li class="breadcrumb-item active">Subject Area</li>
+                <li class="breadcrumb-item active">{{ $vocabulary->name }}</li>
             </ol>
             @include('layouts.messages')
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <i class="fa fa-table"></i> All Subject Area
+                        <i class="fa fa-table"></i> All {{ $vocabulary->name }}
                     </div>
-                    <a href="{{ route('subject_area.edit_or_create') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('subject_area.edit_or_create', ['vid' => $vid]) }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-plus"></i> Create New
                     </a>
                 </div>
@@ -44,7 +44,7 @@
                                             <td>{{ $translations[$localeCode] ?? '' }}</td>
                                         @endforeach
                                         <td class="text-center">
-                                            <a href='{{ route("subject_area.edit_or_create",$tnid) }}'
+                                            <a href='{{ route("subject_area.edit_or_create",['vid' => $vid, 'tnid' => $tnid]) }}'
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="fa fa-edit"></i> Edit
                                             </a>

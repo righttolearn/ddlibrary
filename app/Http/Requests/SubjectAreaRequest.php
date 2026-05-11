@@ -23,14 +23,12 @@ class SubjectAreaRequest extends FormRequest
      */
     public function rules(): array
     {
-        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
-
         return [
             'tnid' => [
                 'nullable',
                 'integer',
                 'min:1',
-                Rule::exists('taxonomy_term_data', 'tnid')->where('vid', $vid),
+                Rule::exists('taxonomy_term_data', 'tnid')->where('vid', $this->vid),
             ],
             'weight' => [
                 'required',

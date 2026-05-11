@@ -214,9 +214,9 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
             Route::post('store-translate/{tnid}', 'storeTranslate')->name('taxonomytranslatestore');
 
             // Subject areas routes
-            Route::get('subject-areas', 'subjectAreas')->name('subject_areas.index');
-            Route::get('subject-area/edit-or-create/{tnid?}', 'editOrCreateSubjectArea')->where('tnid', '[1-9][0-9]*')->name('subject_area.edit_or_create');
-            Route::post('subject-area', 'storeOrUpdateSubjectArea')->name('subject_area.store_or_update');
+            Route::get('subject-areas/{vid}', 'subjectAreas')->name('subject_areas.index');
+            Route::get('subject-area/edit-or-create/{vid}/{tnid?}', 'editOrCreateSubjectArea')->where('tnid', '[1-9][0-9]*')->name('subject_area.edit_or_create');
+            Route::post('subject-area/{vid}', 'storeOrUpdateSubjectArea')->name('subject_area.store_or_update');
 
             // Resource Types routes
             Route::get('resource-types', 'resourceTypes')->name('resource_types.index');
