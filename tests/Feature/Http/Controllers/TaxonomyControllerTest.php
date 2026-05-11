@@ -207,7 +207,7 @@ class TaxonomyControllerTest extends TestCase
             'language' => 'en',
         ]);
 
-        $response = $this->actingAs($admin)->get(route('subject_areas.index'));
+        $response = $this->actingAs($admin)->get(route('subject_areas.index',['vid' => $vid]));
 
         $response->assertOk();
         $response->assertViewIs('admin.taxonomy.subject-area.index');
@@ -220,10 +220,11 @@ class TaxonomyControllerTest extends TestCase
     {
         $this->refreshApplicationWithLocale('en');
 
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
         $admin = User::factory()->create();
         $admin->roles()->attach(5);
 
-        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create'));
+        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create', ['vid' => $vid]));
 
         $response->assertOk();
         $response->assertViewIs('admin.taxonomy.subject-area.edit');
@@ -249,8 +250,9 @@ class TaxonomyControllerTest extends TestCase
             'language' => 'en',
         ]);
         $term->update(['tnid' => $term->id]);
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
 
-        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create', ['tnid' => $term->tnid]));
+        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create', ['vid' => $vid,'tnid' => $term->tnid]));
 
         $response->assertOk();
         $response->assertViewIs('admin.taxonomy.subject-area.edit');
@@ -267,8 +269,9 @@ class TaxonomyControllerTest extends TestCase
 
         $admin = User::factory()->create();
         $admin->roles()->attach(5);
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
 
-        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create', ['tnid' => 99999]));
+        $response = $this->actingAs($admin)->get(route('subject_area.edit_or_create', ['vid' => $vid, 'tnid' => 99999]));
 
         $response->assertStatus(404);
     }
@@ -285,13 +288,13 @@ class TaxonomyControllerTest extends TestCase
         $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
         $initialCount = TaxonomyTerm::where('vid', $vid)->count();
 
-        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update'), [
+        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update', ['vid' => $vid]), [
             'name' => ['en' => 'Mathematics', 'fa' => ''],
             'weight' => ['en' => 1, 'fa' => 1],
             'parent' => ['en' => 0, 'fa' => 0],
         ]);
 
-        $response->assertRedirect(route('subject_areas.index'));
+        $response->assertRedirect(route('subject_areas.index', ['vid' => $vid]));
         $response->assertSessionHas('success');
 
         $this->assertGreaterThan($initialCount, TaxonomyTerm::where('vid', $vid)->count());
@@ -332,7 +335,7 @@ class TaxonomyControllerTest extends TestCase
 
         $tnid = $termEn->tnid;
 
-        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update'), [
+        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update', ['vid' => $vid]), [
             'tnid' => $tnid,
             'name' => ['en' => 'Science Updated', 'fa' => 'علوم به‌روز'],
             'weight' => ['en' => 2, 'fa' => 2],
@@ -340,7 +343,7 @@ class TaxonomyControllerTest extends TestCase
             'id' => ['en' => $termEn->id, 'fa' => $termFa->id],
         ]);
 
-        $response->assertRedirect(route('subject_areas.index'));
+        $response->assertRedirect(route('subject_areas.index', ['vid' => $vid]));
         $response->assertSessionHas('success');
 
         $termEn->refresh();
@@ -358,8 +361,9 @@ class TaxonomyControllerTest extends TestCase
 
         $admin = User::factory()->create();
         $admin->roles()->attach(5);
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
 
-        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update'), [
+        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update', ['vid' => $vid]), [
             'name' => ['en' => '', 'fa' => '  '],
             'weight' => ['en' => 1, 'fa' => 1],
             'parent' => ['en' => 0, 'fa' => 0],
@@ -375,8 +379,9 @@ class TaxonomyControllerTest extends TestCase
 
         $admin = User::factory()->create();
         $admin->roles()->attach(5);
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
 
-        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update'), [
+        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update', ['vid' => $vid]), [
             'tnid' => 99999,
             'name' => ['en' => 'Some Subject'],
             'weight' => ['en' => 1],
@@ -394,8 +399,9 @@ class TaxonomyControllerTest extends TestCase
 
         $admin = User::factory()->create();
         $admin->roles()->attach(5);
+        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
 
-        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update'), [
+        $response = $this->actingAs($admin)->post(route('subject_area.store_or_update', ['vid' => $vid]), [
             'name' => ['en' => 'Mathematics'],
             'weight' => 1,
             'parent' => ['en' => 0],

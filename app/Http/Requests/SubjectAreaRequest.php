@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\TaxonomyVocabularyEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class SubjectAreaRequest extends FormRequest
 {
@@ -31,7 +32,7 @@ class SubjectAreaRequest extends FormRequest
                 Rule::exists('taxonomy_term_data', 'tnid')->where('vid', $this->vid),
             ],
             'weight' => [
-                'required',
+                'nullable',
                 'array',
             ],
             'weight.*' => [
@@ -63,6 +64,31 @@ class SubjectAreaRequest extends FormRequest
                 Rule::exists('taxonomy_term_data', 'id'),
             ],
         ];
+    }
+
+    /**
+     * Require a matching weight only for languages with a filled name.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $names = $this->input('name', []);
+            $weights = $this->input('weight', []);
+
+            if (! is_array($names)) {
+                return;
+            }
+
+            foreach ($names as $language => $name) {
+                if (! is_string($name) || trim($name) === '') {
+                    continue;
+                }
+
+                if (! is_array($weights) || ! array_key_exists($language, $weights) || ! filled($weights[$language])) {
+                    $validator->errors()->add("weight.$language", __('The weight field is required when the name is filled.'));
+                }
+            }
+        });
     }
 
     /**
