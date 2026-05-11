@@ -385,5 +385,8 @@
     "Privacy Policy": "د شخصي معلوماتو محرميت",
     "Please select your gender": "مهرباني وکړئ خپل جنسيت انتخاب کړئ",
     "Your gender successfully updated": "ستاسو جنسيت په بریالیتوب سره نوي شو.",
-    "This is a work of translation": "این یک کار ترجمه است"
+    "This is a work of translation": "این یک کار ترجمه است",
+    "Failed to load filter options. Please try again.": "د فلټر انتخابونه ښکاره نه شول. مهرباني وکړئ بیا هڅه وکړئ.",
+    "Filter options updated successfully.": "د فلټر انتخابونه په بریالیتوب سره اپډیټ شول.",
+    "Something went wrong while updating filter options.": "د فلټر د انتخابونو د اپډیټ کولو پر مهال ستونزه رامنځته شوه."
 }

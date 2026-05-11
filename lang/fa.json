@@ -406,5 +406,9 @@
     "Privacy Policy": "حفظ اطلاعات شخصی",
     "Please select your gender": "لطفاً جنسیت خود را انتخاب کنید",
     "Your gender successfully updated": "جنسيت شما موفقانه ویرایش گردید.",
-    "This is a work of translation": "این یک کار ترجمه است"
+    "This is a work of translation": "این یک کار ترجمه است",
+    "Failed to load filter options. Please try again.": "گزینه‌های فیلتر بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+    "Filter options updated successfully.": "گزینه‌های فیلتر با موفقیت به‌روزرسانی شد.",
+    "Something went wrong while updating filter options.": "هنگام به‌روزرسانی گزینه‌های فیلتر مشکلی رخ داده است."
+
 }

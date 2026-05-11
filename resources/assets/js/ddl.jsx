@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import * as bootstrap from 'bootstrap';
 import lazysizes from 'lazysizes';
 import axios from "axios";
+import './modules/resource_filter.jsx';
 
 window.Cookies = Cookies;
 window.bootstrap = bootstrap;

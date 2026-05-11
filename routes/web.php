@@ -81,6 +81,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('resources/list', [ResourceController::class, 'list'])->name('resourceList');
     Route::get('resources/filter', [ResourceController::class, 'resourceFilter'])->name('resourceFilter');
     Route::get('resources/filter/subject', [ResourceController::class, 'getSubjectChildren']);
+    Route::post('resources/filter/update-options', [ResourceController::class, 'updateFilterOptions'])->name('filter.update-options');
     Route::get('resources/priorities', [ReportController::class, 'resourcePriorities']);
     Route::get('resources/priorities/exclusion', [ReportController::class, 'resourcePrioritiesExclusion'])->middleware('LibraryManager');
     Route::post('resources/priorities/exclusion/add/{id}', [ReportController::class, 'resourcePrioritiesExclusionModify'])->middleware('LibraryManager');
