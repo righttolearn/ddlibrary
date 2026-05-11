@@ -7,7 +7,7 @@
                     <a href="{{ URL::to('admin') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item active">
-                    <a href="{{ route('subject_areas.index', ['vid' => $vid]) }}">{{ $vocabulary->name }}</a>
+                    <a href="{{ route('subject_areas.index', ['vid' => $vocabulary->vid]) }}">{{ $vocabulary->name }}</a>
                 </li>
             </ol>
             @include('layouts.messages')
@@ -19,7 +19,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <form method="POST" action="{{ route('subject_area.store_or_update', ['vid' => $vid]) }}">
+                        <form method="POST" action="{{ route('subject_area.store_or_update', ['vid' => $vocabulary->vid]) }}">
                             @csrf
                             <table class="table table-bordered" width="100%" cellspacing="0">
                                 <tbody>

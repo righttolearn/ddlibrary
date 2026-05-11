@@ -14,7 +14,7 @@
                     <div>
                         <i class="fa fa-table"></i> All {{ $vocabulary->name }}
                     </div>
-                    <a href="{{ route('subject_area.edit_or_create', ['vid' => $vid]) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('subject_area.edit_or_create', ['vid' => $vocabulary->vid]) }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-plus"></i> Create New
                     </a>
                 </div>
@@ -44,7 +44,7 @@
                                             <td>{{ $translations[$localeCode] ?? '' }}</td>
                                         @endforeach
                                         <td class="text-center">
-                                            <a href='{{ route("subject_area.edit_or_create",['vid' => $vid, 'tnid' => $tnid]) }}'
+                                            <a href='{{ route("subject_area.edit_or_create",['vid' => $vocabulary->vid, 'tnid' => $tnid]) }}'
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="fa fa-edit"></i> Edit
                                             </a>

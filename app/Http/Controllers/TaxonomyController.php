@@ -217,9 +217,7 @@ class TaxonomyController extends Controller
 
         $vocabulary = TaxonomyVocabulary::whereVid($vid)->first();
 
-
-
-        return view('admin.taxonomy.subject-area.index', compact('subjectAreas', 'languages', 'vid', 'vocabulary'));
+        return view('admin.taxonomy.subject-area.index', compact('subjectAreas', 'languages', 'vocabulary'));
     }
 
     public function editOrCreateSubjectArea($vid, $tnid = null)
@@ -237,7 +235,7 @@ class TaxonomyController extends Controller
             return ['term' => $term];
         });
 
-        return view('admin.taxonomy.subject-area.edit', compact('parents', 'terms', 'languages', 'tnid', 'vid', 'vocabulary'));
+        return view('admin.taxonomy.subject-area.edit', compact('parents', 'terms', 'languages', 'tnid', 'vocabulary'));
     }
 
     public function storeOrUpdateSubjectArea(SubjectAreaRequest $request, $vid): RedirectResponse
