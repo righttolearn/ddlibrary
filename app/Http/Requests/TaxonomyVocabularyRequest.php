@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TaxonomyVocabularyEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
-class SubjectAreaRequest extends FormRequest
+class TaxonomyVocabularyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
