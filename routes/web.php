@@ -213,10 +213,12 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
             Route::get('create-translate/{tid}/{tnid}/{lang}', 'createTranslate')->name('taxonomytranslatecreate');
             Route::post('store-translate/{tnid}', 'storeTranslate')->name('taxonomytranslatestore');
 
-            // Subject areas routes
-            Route::get('subject-areas', 'subjectAreas')->name('subject_areas.index');
-            Route::get('subject-area/edit-or-create/{tnid?}', 'editOrCreateSubjectArea')->where('tnid', '[1-9][0-9]*')->name('subject_area.edit_or_create');
-            Route::post('subject-area', 'storeOrUpdateSubjectArea')->name('subject_area.store_or_update');
+            // Taxonomy Vocabularies routes
+            Route::group(['where' => ['vid' => '^(7|8|13)$']], function () {
+                Route::get('taxonomy-vocabularies/{vid}', 'taxonomyVocabularies')->name('taxonomy_vocabularies.index');
+                Route::get('taxonomy-vocabularies/edit-or-create/{vid}/{tnid?}', 'editOrCreateTaxonomyVocabulary')->where('tnid', '[1-9][0-9]*')->name('taxonomy_vocabularies.edit_or_create');
+                Route::post('taxonomy-vocabularies/{vid}', 'storeOrUpdateTaxonomyVocabulary')->name('taxonomy_vocabularies.store_or_update');
+            });
         });
 
         // Taxonomy Vocabulary

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TaxonomyVocabularyEnum;
-use App\Http\Requests\SubjectAreaRequest;
+use App\Http\Requests\TaxonomyVocabularyRequest;
 use App\Models\TaxonomyHierarchy;
 use App\Models\TaxonomyTerm;
 use App\Models\TaxonomyVocabulary;
@@ -203,79 +203,86 @@ class TaxonomyController extends Controller
         return redirect('/admin/taxonomy')->with('success', 'Taxonomy item added successfully!');
     }
 
-    public function subjectAreas(): View
+    // Taxonomy Vocabulary
+    public function taxonomyVocabularies($vid): View
     {
-        $terms = TaxonomyTerm::where('vid', TaxonomyVocabularyEnum::ResourceSubject->value)->get();
+        $terms = TaxonomyTerm::where('vid', $vid)->get();
         $languages = LaravelLocalization::getSupportedLocales();
 
-        $subjectAreas = $terms->groupBy('tnid')->map(function ($translations) {
+        $taxonomyVocabularies = $terms->groupBy('tnid')->map(function ($translations) {
             return $translations->keyBy('language')->map(fn ($t) => $t->name);
         });
 
-        return view('admin.taxonomy.subject-area.index', compact('subjectAreas', 'languages'));
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first();
+
+        return view('admin.taxonomy.taxonomy-vocabularies.index', compact('taxonomyVocabularies', 'languages', 'vocabulary'));
     }
 
-    public function editOrCreateSubjectArea($tnid = null)
+    public function editOrCreateTaxonomyVocabulary($vid, $tnid = null)
     {
-        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
-
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first(); 
         if ($tnid !== null && $tnid > 0 && TaxonomyTerm::where('vid', $vid)->where('tnid', $tnid)->doesntExist()) {
             abort(404);
         }
 
         $terms = TaxonomyTerm::with('taxonomyHierarchy')->where(['vid' => $vid, 'tnid' => $tnid])->get();
         $languages = LaravelLocalization::getSupportedLocales();
-        $parents = TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get();
+        $parents = ($vid != TaxonomyVocabularyEnum::ResourceType->value) ? TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get() : null;
 
         $terms = $terms->keyBy('language')->map(function ($term) {
             return ['term' => $term];
         });
 
-        return view('admin.taxonomy.subject-area.edit', compact('parents', 'terms', 'languages', 'tnid'));
+        return view('admin.taxonomy.taxonomy-vocabularies.edit', compact('parents', 'terms', 'languages', 'tnid', 'vocabulary'));
     }
 
-    public function storeOrUpdateSubjectArea(SubjectAreaRequest $request): RedirectResponse
+    public function storeOrUpdateTaxonomyVocabulary(TaxonomyVocabularyRequest $request, $vid): RedirectResponse
     {
         $operation = $request->tnid ? 'updated' : 'created';
+        $vocabulary = TaxonomyVocabulary::whereVid($vid)->first(); 
+
         DB::beginTransaction();
 
         try {
-            $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
-            $parents = $request->input('parent', []);
-            $weights = $request->input('weight', []);
-            $names = $request->input('name', []);
-            $termIds = $request->input('id', []);
-            $tnid = $request->tnid ?? 0;
-
-            foreach ($names as $language => $name) {
-                $name = trim($name);
-                if (! empty($name)) {
-                    $weight = $weights[$language] ?? null;
-                    $termId = $termIds[$language] ?? null;
-                    $parentId = $parents[$language] ?? 0;
-
-                    $term = $this->saveSubjectAreaTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId);
-
-                    if ($tnid == 0) {
-                        $tnid = $term->id;
-
-                        $term->tnid = $tnid;
-                        $term->save();
-                    }
-                }
-            }
+            $this->storeOrUpdateTranslation($request, $vid);
 
             DB::commit();
 
-            return redirect()->route('subject_areas.index')->with('success', "Subject Area $operation successfully!");
+            return redirect()->route('taxonomy_vocabularies.index', ['vid' => $vid])->with('success', "$vocabulary->name $operation successfully!");
         } catch (\Exception $e) {
             DB::rollback();
 
-            return back()->with('error', 'Subject Area was not '.$operation.'!'.$e->getMessage());
+            return back()->with('error', "$vocabulary->name was not $operation.". $e->getMessage());
         }
     }
 
-    private function saveSubjectAreaTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId = null): TaxonomyTerm
+    private function storeOrUpdateTranslation($request, $vid){
+        $parents = $request->input('parent', []);
+        $weights = $request->input('weight', []);
+        $names = $request->input('name', []);
+        $termIds = $request->input('id', []);
+        $tnid = $request->tnid ?? 0;
+
+        foreach ($names as $language => $name) {
+            $name = trim($name);
+            if (! empty($name)) {
+                $weight = $weights[$language] ?? null;
+                $termId = $termIds[$language] ?? null;
+                $parentId = $parents[$language] ?? 0;
+
+                $term = $this->saveTaxonomyVocabularyTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId);
+
+                if ($tnid == 0) {
+                    $tnid = $term->id;
+
+                    $term->tnid = $tnid;
+                    $term->save();
+                }
+            }
+        }
+    }
+
+    private function saveTaxonomyVocabularyTranslation($vid, $name, $weight, $language, $tnid, $parentId, $termId = null): TaxonomyTerm
     {
         $term = $termId ? TaxonomyTerm::find($termId) : new TaxonomyTerm;
         $term->vid = $vid;

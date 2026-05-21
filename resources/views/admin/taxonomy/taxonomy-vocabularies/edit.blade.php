@@ -7,19 +7,19 @@
                     <a href="{{ URL::to('admin') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item active">
-                    <a href="{{ route('subject_areas.index') }}">Subject Area</a>
+                    <a href="{{ route('taxonomy_vocabularies.index', ['vid' => $vocabulary->vid]) }}">{{ $vocabulary->name }}</a>
                 </li>
             </ol>
             @include('layouts.messages')
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <i class="fa fa-table"></i> {{ $tnid ? 'Update Subject Area' : 'Create Subject Area' }}
+                        <i class="fa fa-table"></i> {{ $tnid ? "Update $vocabulary->name" : "Create $vocabulary->name" }}
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <form method="POST" action="{{ route('subject_area.store_or_update') }}">
+                        <form method="POST" action="{{ route('taxonomy_vocabularies.store_or_update', ['vid' => $vocabulary->vid]) }}">
                             @csrf
                             <table class="table table-bordered" width="100%" cellspacing="0">
                                 <tbody>
@@ -50,11 +50,13 @@
                                             <td>
                                                 <select name="parent[{{ $localeCode }}]" class="form-control">
                                                     <option value="0">...</option>
-                                                    @foreach ($parents->where('language', $localeCode) as $parent)
-                                                        <option value="{{ $parent->id }}" @selected($data['term']['taxonomyHierarchy']['parent'] == $parent->id)>
-                                                            {{ $parent->name }}
-                                                        </option>
-                                                    @endforeach
+                                                    @if($parents)
+                                                        @foreach ($parents->where('language', $localeCode) as $parent)
+                                                            <option value="{{ $parent->id }}" @selected($data['term']['taxonomyHierarchy']['parent'] == $parent->id)>
+                                                                {{ $parent->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
                                                 </select>
                                             </td>
                                         </tr>
