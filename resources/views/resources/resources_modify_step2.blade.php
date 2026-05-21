@@ -33,10 +33,10 @@
                                     <div class="align-self-center">{{ $loop->iteration }}.</div>
                                     <div class="flex-grow-1 align-items-center">
                                         <a
-                                            href="{{ asset('/storage/attachments/' . $item['file_name']) }}" target="_blank">{{ $item['file_name'] }}</a>
+                                            href="{{ getFile('resources/' . $item['file_name']) }}" target="_blank">{{ $item['file_name'] }}</a>
                                     </div>
                                     <div class="align-self-center">
-                                        <a href="{{ url('delete/file/' . $resource['id'] . '/' . $item['file_name']) }}"
+                                        <a href="{{ route('delete-file', ['resourceId' => $resource['id'], 'fileName' => $item['file_name']]) }}"
                                         onclick="return confirm(`{{ __('Are you sure to delete this file?')}}`)">
                                             <span class="fa fa-trash text-danger"></span>
                                         </a>
