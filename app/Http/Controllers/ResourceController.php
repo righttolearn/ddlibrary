@@ -422,10 +422,7 @@ class ResourceController extends Controller
                 $fileSize = $attachments->getSize();
                 $fileName = $attachments->getClientOriginalName();
                 $fileExtension = \File::extension($fileName);
-                $diskType = 's3';
-                if (config('app.env') != 'production') {
-                    $diskType = 'public';
-                }
+                $diskType = diskType();
                 $uniqueId = uniqid(); // Generate a unique ID
                 $fileName = auth()->user()->id.'_'.$uniqueId.'_'.time().'.'.$fileExtension;
                 Storage::disk($diskType)->put('resources/'.$fileName, file_get_contents($attachments));
@@ -1033,10 +1030,7 @@ class ResourceController extends Controller
                 $fileExtension = \File::extension($fileName);
                 $uniqueId = uniqid(); // Generate a unique ID
                 $fileName = auth()->user()->id.'_'.$uniqueId.'_'.time().'.'.$fileExtension;
-                $diskType = 's3';
-                if (config('app.env') != 'production') {
-                    $diskType = 'public';
-                }
+                $diskType = diskType();
                 unset($validatedData['attachments']);
                 Storage::disk($diskType)->put('resources/'.$fileName, file_get_contents($attachments));
                 $validatedData['attc'][] = [
@@ -1412,12 +1406,18 @@ class ResourceController extends Controller
         DB::beginTransaction();
 
         try {
-            Storage::disk('s3')->delete('resources/'.$fileName);
+            $disk = Storage::disk(diskType());
+            $filePath = 'resources/'.$fileName;
+
+            if ($disk->exists($filePath)) {
+                $disk->delete($filePath);
+            }
 
             ResourceAttachment::where('resource_id', $resourceId)->where('file_name', $fileName)->delete();
 
-            $resource = Resource::find($request->resourceId);
+            $resource = Resource::find($resourceId);
 
+            $resourceAttachments = [];
             $dataAttachments = $resource->resourceAttachments($resourceId)->toArray();
             foreach ($dataAttachments as $item) {
                 $resourceAttachments[] = [
@@ -1436,7 +1436,6 @@ class ResourceController extends Controller
                 'level' => 'success',
             ]);
 
-            return redirect("resources/edit/step2/$resourceId");
         } catch (\Exception $e) {
             DB::rollback();
             Session::flash('alert', [
@@ -1444,8 +1443,8 @@ class ResourceController extends Controller
                 'level' => 'danger',
             ]);
 
-            return redirect("resources/edit/step2/$resourceId");
         }
+        return redirect("resources/edit/step2/$resourceId");
     }
 
     public function published($resourceId): RedirectResponse
