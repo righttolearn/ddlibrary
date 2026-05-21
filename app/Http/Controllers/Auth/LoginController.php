@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use RuntimeException;
 
 class LoginController extends Controller implements HasMiddleware
 {
@@ -218,7 +219,7 @@ class LoginController extends Controller implements HasMiddleware
      */
     protected function attemptLogin(Request $request, $authUser): bool
     {
-        $auth_status = $this->guard()->attempt(
+        $auth_status = $this->attemptGuard(
             $this->credentials($request), $request->filled('remember')
         );
         if (! $auth_status and $authUser) {
@@ -226,7 +227,7 @@ class LoginController extends Controller implements HasMiddleware
             $username = $authUser->username;
             $password = $request->only('password');
 
-            return $this->guard()->attempt(
+            return $this->attemptGuard(
                 [
                     'id' => $user_id,
                     'username' => $username,
@@ -236,6 +237,19 @@ class LoginController extends Controller implements HasMiddleware
             );
         } else {
             return $auth_status;
+        }
+    }
+
+    private function attemptGuard(array $credentials, bool $remember): bool
+    {
+        try {
+            return $this->guard()->attempt($credentials, $remember);
+        } catch (RuntimeException $exception) {
+            if ($exception->getMessage() === 'This password does not use the Bcrypt algorithm.') {
+                return false;
+            }
+
+            throw $exception;
         }
     }
 
