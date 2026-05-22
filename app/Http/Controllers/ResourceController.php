@@ -41,6 +41,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -138,66 +139,37 @@ class ResourceController extends Controller
         return back();
     }
 
-    public function list(Request $request): Factory|View|Application
+    public function list(Request $request): View
     {
-        // setting the search session empty
         DDLClearSession();
         $language = $request['language'] ?? null;
         $this->pageView($request, 'Resource List');
 
         $resource = new Resource;
 
-        // Getting all whatever in the parameterBag
-        $everything = $request->all();
-
-        if (isset($everything['search'])) {
-            session(['search' => $everything['search']]);
+        if ($request->filled('search')) {
+            session(['search' => $request->input('search')]);
         }
 
-        if (
-            $request->filled('subjectAreaParent')
-            or
-            $request->filled('subjectAreaChild')
-        ) {
-            $subjectAreaParentIds = [];
-            $parentIdsfromChildren = [];
-            $subjectAreaChildIds = [];
+        $request = $this->resolveSubjectAreaIds($request);
 
-            if ($request->filled('subjectAreaParent')) {
-                $subjectAreaParentIds = $everything['subjectAreaParent'];
-            }
+        $hasFilters = $request->hasAny(['search', 'subject_area', 'level', 'type', 'publisher']);
 
-            if ($request->filled('subjectAreaChild')) {
-                $subjectAreaChildIds = $everything['subjectAreaChild'];
-                $parentIdsfromChildren = (new Resource)
-                    ->resourceAttributesList('taxonomy_term_data', 8, $language)  // 8 being subject areas
-                    ->whereIn('id', $subjectAreaChildIds)
-                    ->pluck('parent')
-                    ->toArray();
-            }
-
-            $bothParentIds = array_merge($parentIdsfromChildren, $subjectAreaParentIds);
-            $noDuplicateParentAreaIds = array_keys(  // return the array with all the keys
-                array_intersect(
-                    array_count_values(  // count how many times a particular value occurs
-                        $bothParentIds
-                    ),
-                    [1]  // keep only the ones with that occurred exactly once
-                )
-            );
-
-            $finalSubjectAreaIds = array_merge($noDuplicateParentAreaIds, $subjectAreaChildIds);
-            $finalSubjectAreaIds = array_map('strval', $finalSubjectAreaIds);
-            $request->query->remove('subjectAreaParent');
-            $request->query->add(['subject_area' => $finalSubjectAreaIds]);
+        if (!$hasFilters) {
+            $lang = config('app.locale');
+            $page = $request->input('page', 1);
+            $resources = Cache::tags(['resource_list'])
+                ->remember("resource_list_{$lang}_page_{$page}", 300, fn() =>
+                $resource->paginateResourcesBy($request)
+                );
+        } else {
+            $resources = $resource->paginateResourcesBy($request);
         }
-
-        $resources = $resource->paginateResourcesBy($request);
 
         return view('resources.resources_list', compact('resources'));
     }
 
-    public function resourceFilter(): Factory|View|Application
+    public function resourceFilter(): View
     {
         $resourceObject = new Resource;
         $parentSubjects = $resourceObject
@@ -279,7 +251,8 @@ class ResourceController extends Controller
             abort(403);
         }
 
-        $this->pageView($request, $resource->title);
+        $this->pageView($request, $resource->title); // TODO: To be deprecated
+        Resource::where('id', $resourceId)->increment('views_count');
 
         $relatedItems = $myResources->getRelatedResources($resourceId, $resource->subjects);
         $comments = ResourceComment::where('resource_id', $resourceId)->published()->get();
@@ -781,20 +754,20 @@ class ResourceController extends Controller
 
         if ($favorite) {
             $favorite->delete();
+            Resource::where('id', $resourceId)->decrement('favorites_count');
             $action = 'deleted';
         } else {
             ResourceFavorite::create([
                 'resource_id' => $resourceId,
                 'user_id' => $userId,
             ]);
+            Resource::where('id', $resourceId)->increment('favorites_count');
             $action = 'added';
         }
 
-        $favoriteCount = ResourceFavorite::where('resource_id', $resourceId)->count();
-
         return response()->json([
             'action' => $action,
-            'favorite_count' => $favoriteCount,
+            'favorite_count' => Resource::where('id', $resourceId)->value('favorites_count'),
         ]);
     }
 
@@ -1600,5 +1573,45 @@ class ResourceController extends Controller
             'success' => true,
             'id' => $counted->id,
         ], 201);
+    }
+
+    private function resolveSubjectAreaIds(Request $request): Request
+    {
+        if (
+            $request->filled('subjectAreaParent') ||
+            $request->filled('subjectAreaChild')
+        ) {
+            $subjectAreaParentIds = [];
+            $parentIdsfromChildren = [];
+            $subjectAreaChildIds = [];
+
+            if ($request->filled('subjectAreaParent')) {
+                $subjectAreaParentIds = $request->input('subjectAreaParent', []);
+            }
+
+            if ($request->filled('subjectAreaChild')) {
+                $subjectAreaChildIds = $request->input('subjectAreaChild', []);
+                $parentIdsfromChildren = (new Resource)
+                    ->resourceAttributesList('taxonomy_term_data', 8)
+                    ->whereIn('id', $subjectAreaChildIds)
+                    ->pluck('parent')
+                    ->toArray();
+            }
+
+            $bothParentIds = array_merge($parentIdsfromChildren, $subjectAreaParentIds);
+            $noDuplicateParentAreaIds = array_keys(
+                array_intersect(
+                    array_count_values($bothParentIds),
+                    [1]
+                )
+            );
+
+            $finalSubjectAreaIds = array_merge($noDuplicateParentAreaIds, $subjectAreaChildIds);
+            $finalSubjectAreaIds = array_map('strval', $finalSubjectAreaIds);
+            $request->query->remove('subjectAreaParent');
+            $request->query->add(['subject_area' => $finalSubjectAreaIds]);
+        }
+
+        return $request;
     }
 }

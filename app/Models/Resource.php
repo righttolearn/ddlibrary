@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyVocabularyEnum;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -266,22 +267,21 @@ class Resource extends Model
         $levelIds = $request['level'];
         $typeIds = $request['type'];
 
-        if ($sessionQuery = session('search')) {
-            $searchQuery = $sessionQuery;
-        } else {
-            $searchQuery = $request->input('search');
-        }
+        $searchQuery = session('search') ?? $request->input('search');
 
-        return DB::table('resources AS rs')
+        $resources = DB::table('resources AS rs')
             ->select([
                 'rs.id',
                 'rs.language',
                 'rs.abstract',
                 'rs.title',
                 'rs.status',
-                'rf.name'
+                'rs.views_count',
+                'rs.comments_count',
+                'rs.favorites_count',
+                'rf.name',
             ])
-            ->leftjoin('resource_files AS rf', 'rf.id', '=', 'rs.resource_file_id')
+            ->leftJoin('resource_files AS rf', 'rf.id', '=', 'rs.resource_file_id')
             ->when($subjectAreaIds != null, function ($query) use ($subjectAreaIds) {
                 return $query
                     ->join('resource_subject_areas AS rsa', 'rsa.resource_id', '=', 'rs.id')
@@ -293,15 +293,13 @@ class Resource extends Model
             })
             ->when($levelIds != null, function ($query) use ($levelIds) {
                 return $query->join('resource_levels AS rl', function ($join) use ($levelIds) {
-                    $join
-                        ->on('rl.resource_id', '=', 'rs.id')
+                    $join->on('rl.resource_id', '=', 'rs.id')
                         ->where('rl.tid', $levelIds);
                 });
             })
             ->when($typeIds != null, function ($query) use ($typeIds) {
                 return $query->join('resource_learning_resource_types AS rlrt', function ($join) use ($typeIds) {
-                    $join
-                        ->on('rlrt.resource_id', '=', 'rs.id')
+                    $join->on('rlrt.resource_id', '=', 'rs.id')
                         ->where('rlrt.tid', $typeIds);
                 });
             })
@@ -310,16 +308,15 @@ class Resource extends Model
                     ->leftJoin('resource_authors AS ra', 'ra.resource_id', '=', 'rs.id')
                     ->leftJoin('resource_publishers AS rp', 'rp.resource_id', '=', 'rs.id')
                     ->leftJoin('resource_translators AS rt', 'rt.resource_id', '=', 'rs.id')
-                    ->leftJoin('taxonomy_term_data AS ttd', 'ttd.id', '=', 'ra.tid')
-                    ->leftJoin('taxonomy_term_data AS ttdp', 'ttdp.id', '=', 'rp.tid') // publisher
-                    ->leftJoin('taxonomy_term_data AS ttdt', 'ttdt.id', '=', 'rt.tid') // translator
-                    ->where(function ($query) use ($searchQuery) {
-                        return $query
-                            ->where('rs.title', 'like', '%'.$searchQuery.'%')
-                            ->orwhere('rs.abstract', 'like', '%'.$searchQuery.'%')
-                            ->orwhere('ttd.name', 'like', '%'.$searchQuery.'%')
-                            ->orwhere('ttdp.name', 'like', '%'.$searchQuery.'%')
-                            ->orwhere('ttdt.name', 'like', '%'.$searchQuery.'%');
+                    ->leftJoin('taxonomy_term_data AS ttd_a', 'ttd_a.id', '=', 'ra.tid')
+                    ->leftJoin('taxonomy_term_data AS ttd_p', 'ttd_p.id', '=', 'rp.tid')
+                    ->leftJoin('taxonomy_term_data AS ttd_t', 'ttd_t.id', '=', 'rt.tid')
+                    ->where(function ($q) use ($searchQuery) {
+                        $q->where('rs.title', 'like', '%'.$searchQuery.'%')
+                            ->orWhere('rs.abstract', 'like', '%'.$searchQuery.'%')
+                            ->orWhere('ttd_a.name', 'like', '%'.$searchQuery.'%')
+                            ->orWhere('ttd_p.name', 'like', '%'.$searchQuery.'%')
+                            ->orWhere('ttd_t.name', 'like', '%'.$searchQuery.'%');
                     });
             })
             ->when($request->filled('publisher'), function ($query) use ($request) {
@@ -338,7 +335,7 @@ class Resource extends Model
             )
             ->where('rs.status', 1)
             ->where(function ($query) {
-                $query->where('rs.id', '>=', 11479)->orWhere('rs.id', '<', 10378); // TODO: remove after restoration
+                $query->where('rs.id', '>=', 11479)->orWhere('rs.id', '<', 10378);
             })
             ->orderBy('rs.created_at', 'desc')
             ->groupBy(
@@ -348,9 +345,88 @@ class Resource extends Model
                 'rs.status',
                 'rf.name',
                 'rs.abstract',
-                'rs.created_at',
+                'rs.views_count',
+                'rs.comments_count',
+                'rs.favorites_count',
+                'rs.created_at'
             )
             ->paginate(30);
+
+        // Fetch metadata
+        $ids = $resources->pluck('id')->toArray();
+        $metadata = $this->fetchResourceMetadata($ids);
+
+        // Attach metadata to each resource
+        $resources->getCollection()->transform(function ($resource) use ($metadata) {
+            $meta = $metadata->get($resource->id);
+            $resource->type = $meta['type'] ?? null;
+            $resource->level = $meta['level'] ?? null;
+            $resource->subject_area = $meta['subject'] ?? null;
+            $resource->author = $meta['author'] ?? null;
+            $resource->publisher = $meta['publisher'] ?? null;
+            return $resource;
+        });
+
+        return $resources;
+    }
+
+    private function fetchResourceMetadata(array $ids): Collection
+    {
+        $lang = config('app.locale');
+
+        $types = DB::table('resource_learning_resource_types AS rlrt')
+            ->join('taxonomy_term_data AS ttd', function($join) {
+                $join->on('ttd.id', '=', 'rlrt.tid')
+                    ->where('ttd.vid', TaxonomyVocabularyEnum::ResourceType->value);
+            })
+            ->whereIn('rlrt.resource_id', $ids)
+            ->where('ttd.language', $lang)
+            ->pluck('ttd.name', 'rlrt.resource_id');
+
+        $levels = DB::table('resource_levels AS rl')
+            ->join('taxonomy_term_data AS ttd', function($join) {
+                $join->on('ttd.id', '=', 'rl.tid')
+                    ->where('ttd.vid', TaxonomyVocabularyEnum::ResourceLevels->value);
+            })
+            ->whereIn('rl.resource_id', $ids)
+            ->where('ttd.language', $lang)
+            ->pluck('ttd.name', 'rl.resource_id');
+
+        $subjects = DB::table('resource_subject_areas AS rsa')
+            ->join('taxonomy_term_data AS ttd', function($join) {
+                $join->on('ttd.id', '=', 'rsa.tid')
+                    ->where('ttd.vid', TaxonomyVocabularyEnum::ResourceSubject->value);
+            })
+            ->whereIn('rsa.resource_id', $ids)
+            ->where('ttd.language', $lang)
+            ->pluck('ttd.name', 'rsa.resource_id');
+
+        $authors = DB::table('resource_authors AS ra')
+            ->join('taxonomy_term_data AS ttd', function($join) {
+                $join->on('ttd.id', '=', 'ra.tid')
+                    ->where('ttd.vid', TaxonomyVocabularyEnum::ResourceAuthor->value);
+            })
+            ->whereIn('ra.resource_id', $ids)
+            ->pluck('ttd.name', 'ra.resource_id');
+
+        $publishers = DB::table('resource_publishers AS rp')
+            ->join('taxonomy_term_data AS ttd', function($join) {
+                $join->on('ttd.id', '=', 'rp.tid')
+                    ->where('ttd.vid', TaxonomyVocabularyEnum::ResourcePublisher->value);
+            })
+            ->whereIn('rp.resource_id', $ids)
+            ->pluck('ttd.name', 'rp.resource_id');
+
+        // Combine into a keyed collection by resource_id
+        return collect($ids)->mapWithKeys(function ($id) use ($types, $levels, $subjects, $authors, $publishers) {
+            return [$id => [
+                'type'      => $types->get($id),
+                'level'     => $levels->get($id),
+                'subject'   => $subjects->get($id),
+                'author'    => $authors->get($id),
+                'publisher' => $publishers->get($id),
+            ]];
+        });
     }
 
     // Total resources based on level
