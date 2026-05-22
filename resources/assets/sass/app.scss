@@ -20,10 +20,17 @@
 @import '@fortawesome/fontawesome-free/scss/solid';
 @import '@fortawesome/fontawesome-free/scss/brands';
 
+// Phosphor Icons
+@import '@phosphor-icons/web/light';
+@import '@phosphor-icons/web/fill';
+
 //jQuery UI
 @import 'jquery-ui/themes/base/all.css';
 
 // Custom and mis
-@import 'footer';
+@import 'icons';
 @import 'forms';
 @import 'navbar';
+@import 'home';
+@import 'footer';
+
