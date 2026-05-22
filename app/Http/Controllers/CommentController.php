@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Resource;
 use App\Models\ResourceComment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -17,15 +18,23 @@ class CommentController extends Controller
 
     public function published(ResourceComment $resourceComment)
     {
-        $resourceComment->update([
-            'status' => $resourceComment->status == 1 ? 0 : 1,
-        ]);
+        $newStatus = $resourceComment->status == 1 ? 0 : 1;
+        $resourceComment->update(['status' => $newStatus]);
+
+        if ($newStatus == 1) {
+            Resource::where('id', $resourceComment->resource_id)->increment('comments_count');
+        } else {
+            Resource::where('id', $resourceComment->resource_id)->decrement('comments_count');
+        }
 
         return back();
     }
 
     public function delete(ResourceComment $resourceComment): RedirectResponse
     {
+        if ($resourceComment->status == 1) {
+            Resource::where('id', $resourceComment->resource_id)->decrement('comments_count');
+        }
         $resourceComment->delete();
 
         return redirect()->back()->with('success', 'Comment has been deleted successfully!');
