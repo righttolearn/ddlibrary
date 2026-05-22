@@ -1,0 +1,29 @@
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resource-card .card-body {
+  min-height: 145px;
+}
+
+.resource-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.resource-card img {
+  object-fit: cover;
+  height: 220px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+.resource-card:hover img {
+  transform: scale(1.05);
+}

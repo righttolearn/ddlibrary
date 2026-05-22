@@ -11,28 +11,6 @@ main {
     background-color: #FFFFFF;
 }
 
-.resource-pagination {
-    display: flex;
-    padding-left: 0;
-    list-style: none;
-    border-radius: .25rem;
-    -webkit-border-radius: .25rem;
-    -moz-border-radius: .25rem;
-    width: 100%;
-    justify-content: center;
-}
-.resource-pagination ul {
-    margin-top: 0;
-    margin-bottom: 1em;
-    margin-top: 1em;
-    display: flex;
-    list-style: none!important;
-}
-
-.page-link:not(:disabled):not(.disabled) {
-    cursor: pointer;
-}
-
 .content article:hover {
     opacity: 0.5;
     cursor: pointer;
@@ -185,160 +163,12 @@ select.form-control:focus::-ms-value {
     margin: .5em 0em .5em 0em;
 }
 
-.resource-list {
-    display: flex;
-    padding: 5px;
-    margin: 5px;
-    background-color: white;
-    border-radius: .1rem;
-    -webkit-border-radius: .1rem;
-    -moz-border-radius: .1rem;
-}
-
-.resource-list aside {
-    flex: 1 1 25%;
-}
-
-.resource-list fieldset {
-    margin-bottom: 1em;
-}
-
-.resource-list h3 {
-    padding-bottom: 5px;
-}
-
-/* Style the buttons that are used to open and close the accordion panel */
-.resource-list .accordion {
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    outline: none;
-    transition: 0.4s;
-    box-sizing: border-box;
-    border-radius: .1rem;
-    -webkit-border-radius: .1rem;
-    -moz-border-radius: .1rem;
-}
-
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.resource-list .accordion .active, .resource-list .accordion:hover ,.glossary-accordion:hover {
-    background-color: #ccc;
-}
-
-/* Style the accordion panel. Note: hidden by default */
-.resource-list .panel{
-    background-color: white;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
-}
-
-.resource-list .accordion:after {
-    content: '\02795'; /* Unicode character for "plus" sign (+) */
-    font-size: 13px;
-    color: #000;
-    margin-left: 5px;
-}
-
-.resource-list #side-form .active:after {
-    content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-.resource-list ul li {
-    font-size: 0.9rem;
-}
-
-.resource-list ul li:hover{
-    background-color: #afaaaa;
-    cursor: pointer;
-}
-
-.resource-list .active-header {
-    background-color: #f8c45b;
-}
-
-.resource-card {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.resource-card img {
-    object-fit: cover;
-    height: 220px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.resource-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.25);
-}
-
-.resource-card:hover img {
-    transform: scale(1.05);
-}
-
 .sub-item {
     margin: 0 10px 0 10px;
 }
 
 aside .sub-subject-show {
     display: block;
-}
-
-.resource-list .resource-information-section {
-    flex: 1 1 75%;
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: flex-start;
-    align-content: flex-start;
-}
-
-.resource-list .resource-information {
-    flex-basis: auto;
-    box-shadow: 0 2px 5px #ccc;
-}
-
-.resource-list .resource-img {
-    width: 200px;
-    height: 167px;
-    border-radius: .1rem;
-    -webkit-border-radius: .1rem;
-    -moz-border-radius: .1rem;
-}
-
-.resource-list .resource-details {
-    display: flex;
-    justify-content: space-around;
-    border-top: 1px dotted #eec67b;
-    width: 200px;
-    box-sizing: border-box;
-}
-
-.resource-list .resource-details article {
-    display: flex;
-    padding: 2px;
-    margin: 2px;
-}
-
-.resource-list .resource-details span {
-    text-align: center;
-    color: #888;
-}
-
-.resource-list .resource-details i {
-    text-align: center;
-    color: #888;
-}
-
-.resource-list-card-footer-separator::before {
-    content: "•";
-    margin: 0 4px;
-}
-
-.card-footer.resource-list-footer-style-override {
-    border-top: 0;
 }
 
 .resource-view {
