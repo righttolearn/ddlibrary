@@ -3,112 +3,6 @@ main {
     min-height: 76vh;
 }
 
-.header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    background-color: black;
-    color: white;
-    justify-content: space-between;
-}
-.header-img {
-    padding: 10px;
-}
-.header-right .main-navigation {
-    display: flex;
-    padding: 30px;
-}
-
-header #toggle {
-    display: none;
-}
-
-.header-right .language-content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    margin: 0 25px -23px 34px;
-}
-.header-right .language-content li {
-    margin-right: 10px;
-    font-size: 1rem;
-}
-
-.language-content .username {
-    color: #ffffff!important;
-    text-decoration: underline;
-}
-.header-right .language-content li a {
-    color: #ffa800;
-}
-.banner {
-    padding: 5px;
-    max-width: 1170px;
-    text-align: center;
-    background: #eeeeee;
-    margin: 0 auto 2em;
-}
-.banner header {
-    margin: 5px 0px 30px 0px;
-}
-.form-search {
-    padding: .2rem 0rem;
-    font-size: 1.25rem;
-    line-height: 0.5;
-    border-radius: .3rem;
-    -webkit-border-radius: .3rem;
-    -moz-border-radius: .3rem;
-    width: 50%;
-    text-align: center;
-    margin: 0 auto;
-}
-
-.banner .form-control {
-    display: inline;
-}
-
-.banner .form-control:focus {
-    border-color: #ffa800;
-    -webkit-box-shadow: 0 0 0 0;
-    box-shadow: 0 0 0 0;
-}
-
-.normal-button {
-    border: 1px solid transparent;
-    padding: 1em 1em;
-    font-size: 1rem;
-    border-radius: .25em;
-    background-color: #dddddd;
-}
-
-#homepage-main-container {
-    background-color: #FFFFFF;
-}
-
-#homepage-main-container .sub-heading {
-    text-align: center;
-}
-
-#homepage-main-container .main-heading {
-    background-image:
-        linear-gradient(
-            45deg,
-            #ffa800,
-            transparent
-        );
-    border-radius: 2px;
-}
-
-#homepage-main-container .main-heading-rtl {
-    background-image:
-        linear-gradient(
-            225deg,
-            #ffa800,
-            transparent
-        );
-    border-radius: 2px;
-}
-
 #news-highlight {
     background-color: #7777776e;
 }
@@ -117,42 +11,6 @@ header #toggle {
     background-color: #FFFFFF;
 }
 
-.main-section{
-    box-sizing: border-box;
-    background: #ffffff;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-}
-.main-section header {
-    padding: 0 20px 20px;
-}
-.main-section article {
-    text-align: center;
-    margin: 15px;
-    padding: 15px;
-}
-
-.section-content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.section-content .home-subject-areas {
-    font-size: 0.85rem;
-}
-.home-subject-areas .resource-count {
-    font-size: 0.75rem;
-    font-style: italic;
-}
-.home-subject-areas:hover {
-    cursor: pointer;
-    opacity: 0.5;
-}
-.home-subject-areas p {
-    margin-top: 1em;
-    font-size: 0.9em;
-}
 .resource-pagination {
     display: flex;
     padding-left: 0;
@@ -171,75 +29,14 @@ header #toggle {
     list-style: none!important;
 }
 
-.resource-pagination ul li {
-    display: list-item;
-    float: left;
-}
-.page-item.active .page-link {
-    z-index: 1;
-    color: #fff;
-    background-color: #ffa800;
-    border-color: #ffa800;
-}
 .page-link:not(:disabled):not(.disabled) {
     cursor: pointer;
 }
-.page-link {
-    position: relative;
-    display: block;
-    padding: .5rem .75rem;
-    margin-left: -1px;
-    line-height: 1.25;
-    color: #888;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-}
+
 .content article:hover {
     opacity: 0.5;
     cursor: pointer;
 }
-.main-section article {
-    text-align: center;
-    margin: 15px;
-    padding: 15px;
-}
-.latest-news{
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5px;
-    margin-top: 3em;
-    background: #eeeeee;
-    justify-content: space-around;
-}
-.latest-content {
-    padding-top: 5px;
-    padding-bottom: 15px;
-    width: 350px;
-}
-.news-description {
-    font-style: italic;
-    font-size: 1rem;
-}
-
-.hr-class {
-    border: none;
-    border-top: 1px solid #bbbcae;
-    margin: 20px 0px;
-    max-width: 1170px;
-    margin: 0 auto;
-}
-
-/*#page-container {*/
-/*    position: relative;*/
-/*    min-height: 100vh;*/
-/*    background: #eee;*/
-/*    a {*/
-/*        text-decoration: none;*/
-/*        &:hover {*/
-/*            text-decoration: underline;*/
-/*        }*/
-/*    }*/
-/*}*/
 
 /** Registration */
 .ddl-forms {
@@ -531,7 +328,7 @@ aside .sub-subject-show {
 }
 
 .resource-list .resource-details i {
-    text-align: center; 
+    text-align: center;
     color: #888;
 }
 
@@ -786,58 +583,6 @@ aside .sub-subject-show {
     padding-top: 6px;
 }
 
-/* Responsive menu */
-.overlay {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0, 0.9);
-    overflow-x: hidden;
-    transition: 0.5s;
-}
-
-.overlay-content {
-    position: relative;
-    top: 25%;
-    width: 100%;
-    text-align: center;
-    margin-top: 30px;
-}
-
-.overlay a {
-    padding: 8px;
-    text-decoration: none;
-    font-size: 36px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
-
-.overlay a:hover, .overlay a:focus {
-    color: #f1f1f1;
-}
-
-.overlay .closebtn {
-    position: absolute;
-    top: 20px;
-    right: 45px;
-    font-size: 60px;
-}
-
-.overlay .language-container {
-    margin-bottom: 1em;
-}
-
-.overlay .language-container a {
-    display: inline;
-    font-size: 1rem; 
-    color:#ffa800
-}
-
 .translate {
     border-collapse: inherit;
     border-spacing: 1em;
@@ -885,15 +630,6 @@ th, td {
 
 tr:nth-child(even){background-color: #f2f2f2}
 
-@media screen and (max-height: 450px) {
-  .overlay a {font-size: 20px}
-  .overlay .closebtn {
-    font-size: 40px;
-    top: 15px;
-    right: 35px;
-  }
-}
-
 @media only screen and (max-width: 530px) {
     .section-content a {
         width: 50%;
@@ -901,20 +637,6 @@ tr:nth-child(even){background-color: #f2f2f2}
 }
 
 @media only screen and (max-width: 760px) {
-    footer div {
-        padding-bottom: 1em;
-    }
-
-    footer div i{
-        padding: 0.5em;
-    }
-
-    footer nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
     main {
         margin: 0 auto 1em;
         min-height: 76vh;
