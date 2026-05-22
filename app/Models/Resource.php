@@ -429,7 +429,7 @@ class Resource extends Model
         $lang = ! $lang ? config('app.locale') : $lang;
 
         return DB::table('resource_subject_areas AS sarea')
-            ->select('sticons.file_name', 'ttd.name', 'ttd.id', 'sarea.tid AS subject_area')
+            ->select('sticons.file_name', 'sticons.phosphor_icon', 'ttd.name', 'ttd.id', 'sarea.tid AS subject_area')
             ->leftJoin('taxonomy_term_data AS ttd', function ($join) {
                 $join->on('ttd.id', '=', 'sarea.tid')->where('ttd.vid', 8);
             })
@@ -456,7 +456,7 @@ class Resource extends Model
         $lang = ! $lang ? config('app.locale') : $lang;
 
         return DB::table('featured_collections AS fcid')
-            ->select('fcid.id', 'ttd.name', 'fcid.icon', 'ttd.language', 'fu.url', 'frt.type_id', 'frs.subject_id', 'frls.level_id')
+            ->select('fcid.id', 'ttd.name', 'fcid.phosphor_icon', 'ttd.language', 'fu.url', 'frt.type_id', 'frs.subject_id', 'frls.level_id')
             ->leftJoin('taxonomy_term_data AS ttd', function ($join) {
                 $join->on('ttd.id', '=', 'fcid.name_tid')->where('ttd.vid', 21);
             })
