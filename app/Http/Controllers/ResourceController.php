@@ -266,16 +266,21 @@ class ResourceController extends Controller
 
         $ePub = $this->resolveEpubUrl($resource);
 
-        return view('resources.resources_view', compact(
+        $viewData = compact(
             'resource',
             'relatedItems',
             'comments',
             'languages_available',
             'translations',
-            'ePub',
-            'prevArrow',
-            'nextArrow'
-        ));
+            'ePub'
+        );
+
+        if ($ePub) {
+            $viewData['prevArrow'] = app()->getLocale() == 'en' ? '←' : '→';
+            $viewData['nextArrow'] = app()->getLocale() == 'en' ? '→' : '←';
+        }
+
+        return view('resources.resources_view', $viewData);
     }
 
     public function createStepOne(Request $request): Factory|View|Application
@@ -284,8 +289,12 @@ class ResourceController extends Controller
         $myResources = new Resource;
         $creativeCommons = $myResources->resourceAttributesList('taxonomy_term_data', 10, config('app.locale'), [168, 535]); // taxonomy_term_data.tnid [168=Unknown , 535=CC BY / CC BY-SA]
         $subjects = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::ResourceSubject);
+        $subjects = $subjects->map(function($item) use ($subjects) {
+            $item->children = $subjects->where('parent', $item->id);
+            return $item;
+        });
 
-        return view('resources.resources_modify_step1', compact('resource', 'creativeCommons', 'subjects'));
+        return view('resources.resource_form', compact('resource', 'creativeCommons', 'subjects'));
     }
 
     public function postStepOne(ResourceStepOneRequest $request): Redirector|Application|RedirectResponse
