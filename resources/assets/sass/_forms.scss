@@ -7,4 +7,12 @@
   .input-group > .btn:last-child {
     border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius) !important;
   }
+
+  .pagination .page-item:first-child .page-link {
+    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0;
+  }
+
+  .pagination .page-item:last-child .page-link {
+    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+  }
 }

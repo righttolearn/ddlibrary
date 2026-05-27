@@ -27,3 +27,73 @@
 .resource-card:hover img {
   transform: scale(1.05);
 }
+
+#epubViewer {
+  .epub-content-wrapper {
+    min-height: 600px;
+    overflow-x: hidden;
+  }
+  #epubContent {
+    width: 100% !important;
+    overflow-x: hidden;
+  }
+  .progress {
+    height: 8px;
+  }
+  #progressBar {
+    background: linear-gradient(90deg, $secondary 0%, darken($secondary, 10%) 100%);
+  }
+}
+
+.resource-hero-img {
+  max-height: 250px;
+  font-size: 0;
+}
+
+.social-share {
+  .ph-twitter-logo { color: #1da1f2; }
+  .ph-facebook-logo { color: #4267b2; }
+  .ph-linkedin-logo { color: #0077b5; }
+
+  a {
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+#meta-box-title {
+  background-image: linear-gradient(45deg, #7777776e, transparent);
+
+  [dir="rtl"] & {
+    background-image: linear-gradient(225deg, #7777776e, transparent);
+  }
+}
+
+.comment-meta {
+  font-size: 0.75rem;
+  color: #535659;
+}
+
+.comment-time {
+  font-size: 0.625rem;
+  color: #8795a1;
+}
+
+.similar-resource-item {
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--bs-light);
+  }
+
+  img {
+    transition: transform 0.2s ease;
+    font-size: 0;
+    max-height: 60px;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}

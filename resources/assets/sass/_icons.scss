@@ -1,9 +1,10 @@
-.ph-light {
-  font-size: 6rem;
-}
-
-.ph-fill {
-  font-size: 5rem;
+.home-subject-areas {
+  .ph-light {
+    font-size: 6rem;
+  }
+  .ph-fill {
+    font-size: 5rem;
+  }
 }
 
 #main-footer {
@@ -12,8 +13,22 @@
   }
 }
 
-#resource_list {
+.resource-view {
+  .ph-light, .ph-fill {
+    font-size: 1.4rem;
+  }
+}
+
+.resource-view {
+  #resourceFavorite {
+    .ph-fill {
+      color: gold;
+    }
+  }
+}
+
+#shareModal {
   .ph-fill {
-    font-size: 1.2rem;
+    font-size: 4rem;
   }
 }

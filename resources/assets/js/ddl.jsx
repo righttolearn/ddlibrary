@@ -414,6 +414,31 @@ function togglePassword(icon='password-toggle-icon', input = 'user-password') {
     }
 }
 
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-action="resourceFavorite"]');
+    if (!btn) return;
+
+    if (btn.dataset.authenticated === 'false') {
+        alert('Please login to mark a resource as your favorite');
+        return;
+    }
+
+    favorite('resourceFavorite', baseUrl + '/resources/favorite/', btn.dataset.resource);
+    const icon = btn.querySelector('i');
+    if (icon.classList.contains('ph-fill')) {
+        icon.classList.replace('ph-fill', 'ph-light');
+        icon.style.color = '';
+    } else {
+        icon.classList.replace('ph-light', 'ph-fill');
+        icon.style.color = 'gold';
+    }
+});
+
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-action="download-counter"]');
+    if (btn) downloadCounter(btn);
+});
+
 window.downloadCounter = function(element) {
     const data = {
         file_id: element.getAttribute('data-file'),
