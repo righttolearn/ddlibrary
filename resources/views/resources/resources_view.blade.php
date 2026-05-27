@@ -6,339 +6,253 @@
     {{ html_entity_decode(trim(strip_tags(fixImage($resource->abstract, $resource->id)))) }}
 @endsection
 @section('page_image')
-
-        {{  $resource->resourceFile ?  getResourceImage($resource->resourceFile->name, true)  : getImagefromResource($resource->abstract, '282x254') }}
+    {{  $resource->resourceFile ?  getResourceImage($resource->resourceFile->name, true)  : getImagefromResource($resource->abstract, '282x254') }}
 @endsection
-@section('style')
+@push('style')
     <style>
         .epub-container {
             overflow: visible !important;
         }
     </style>
-@endsection
-@section('search')
-    @include('layouts.search')
-@endsection
+@endpush
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid resource-view">
         @include('layouts.messages')
         <div class="row m-2 mt-md-4">
             <div class="col-md-8">
                 @if ($resource->attachments)
                     @foreach ($resource->attachments as $file)
                         @if ($file->file_mime == 'application/pdf')
-                            <iframe
-                                src="{{ getFile('/resources/' . $file->file_name) }}#toolbar=0"
-                                height="500" width="100%"></iframe>
+                            <div class="ratio ratio-16x9">
+                                <iframe
+                                    src="{{ getFile('/resources/' . $file->file_name) }}#toolbar=0"
+                                    title="@lang('Resource preview')"
+                                    loading="lazy"></iframe>
+                            </div>
                         @elseif(
                             $file->file_mime == 'application/msword' ||
                                 $file->file_mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-                            <iframe
-                                src="{{ config('constants.google_doc_viewer_url') . rawurlencode(getFile('/resources/' . $file->file_name)) . '&embedded=true' }}"
-                                height="500" width="100%"></iframe>
+                            <div class="ratio ratio-16x9">
+                                <iframe src="{{ config('constants.google_doc_viewer_url') . rawurlencode(getFile('/resources/' . $file->file_name)) . '&embedded=true' }}"></iframe>
+                            </div>
                         @elseif($file->file_mime == 'audio/mpeg')
-                            <span class="download-item">
-                                <audio controls>
-                                    <source src="{{ getFile('/resources/' . $file->file_name) }}"
-                                        type="audio/mpeg">
-                                </audio>
-                            </span>
+                            <audio controls class="w-100 mb-3">
+                                <source src="{{ getFile('/resources/' . $file->file_name) }}" type="audio/mpeg">
+                                @lang('Your browser does not support audio, please download the file.')
+                            </audio>
                         @elseif($ePub)
-                            <div>
-                                <div class="container-fluid p-2" id="epubViewer" style="display: none;">
-                                    <div class="text-center mb-4">
-                                        <h1 class="display-4 fw-light mb-2" id="epubTitle">@lang('Loading, please wait')</h1>
-                                        <p class="fs-5 text-muted" id="epubAuthor">@lang('Author')</p>
-                                    </div>
+                            <div class="container-fluid p-2 d-none" id="epubViewer">
+                                <div class="text-center mb-4">
+                                    <h1 class="display-4 fw-light mb-2" id="epubTitle">@lang('Loading, please wait')</h1>
+                                    <p class="fs-5 text-muted" id="epubAuthor">@lang('Author')</p>
+                                </div>
 
-                                    <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
-                                        <button class="btn btn-primary px-4 py-2 rounded-pill" id="prevBtn"
-                                            onclick="previousPage()">@lang('Previous')</button>
-                                        <button class="btn btn-primary px-4 py-2 rounded-pill" id="tocBtn"
-                                            onclick="showTableOfContents()">@lang('Table of Contents')</button>
-                                        <button class="btn btn-primary px-4 py-2 rounded-pill" id="fontSizeBtn"
-                                            onclick="toggleFontSize()">@lang('Font Size')</button>
-                                        <button class="btn btn-primary px-4 py-2 rounded-pill" id="nextBtn"
-                                            onclick="nextPage()">@lang('Next')</button>
-                                    </div>
+                                <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
+                                    <button class="btn btn-primary px-4 py-2 rounded-pill" id="tocBtn"
+                                        onclick="showTableOfContents()">@lang('Table of Contents')</button>
+                                    <button class="btn btn-primary px-4 py-2 rounded-pill" id="fontSizeBtn"
+                                        onclick="toggleFontSize()">@lang('Font Size')</button>
+                                </div>
 
-                                     <div class="bg-white rounded-3 shadow-lg p-3" style="min-height: 600px; overflow-x: hidden;">
-                                         <div class="fs-5 text-justify w-100" id="epubContent" style="width: 100% !important; overflow-x: hidden;">
-                                             <!-- EPUB content will be rendered here by epubjs -->
-                                         </div>
+                                 <div class="bg-white rounded-3 shadow-lg p-3 epub-content-wrapper">
+                                     <div class="fs-5 text-justify w-100" id="epubContent">
+                                         <!-- EPUB content will be rendered here by epubjs -->
                                      </div>
+                                 </div>
 
-                                    <div class="d-flex align-items-center mt-4 p-3 bg-light rounded-3">
-                                        <button class="btn btn-primary me-3" onclick="previousPage()">
-                                            @if (Lang::locale() == 'en')
-                                                ←
-                                            @else
-                                                →
-                                            @endif
-                                            @lang('Previous')
-                                        </button>
-                                        <div class="flex-fill text-center">
-                                            <div class="progress d-none" style="height: 8px;">
-                                                <div class="progress-bar" id="progressBar" style="background: linear-gradient(90deg, #d5b577 0%, #ffa800 100%);"></div>
-                                            </div>
-                                            <div class="text-muted small mt-2" id="epubStatus">
-                                                Page 1 of 1
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-primary ms-3" onclick="nextPage()">@lang('Next')
-                                            @if (Lang::locale() == 'en')
-                                                →
-                                            @else
-                                                ←
-                                            @endif
-                                        </button>
-                                    </div>
+                                <div class="d-flex align-items-center mt-4 p-3 bg-light rounded-3">
+                                    <button class="btn btn-primary me-3" onclick="previousPage()">{{ $prevArrow }} @lang('Previous')</button>
+                                    <button class="btn btn-primary ms-3" onclick="nextPage()">@lang('Next') {{ $nextArrow }}</button>
                                 </div>
                             </div>
                         @else
                             <span class="download-item no-preview">@lang('No preview available.')</span>
                         @endif
-
-                        {{-- revert to older direct download format until we have the correct packages installed for PDF watermarking <span class="download-item"><a class="btn btn-primary"
-                                                        href="{{ URL::to('resource/'.$resource->id.'/download/'.$file->id) }}"><i
-                            class="fa fa-download" aria-hidden="true"></i> @lang('Download') ({{ formatBytes($file->file_size) }})</a>
-                        <br>
-                        <hr>
-                        </span> --}}
                         <h6>@lang('File :id', ['id' => $loop->iteration])</h6>
-                        <span class="badge text-bg-secondary">
-                            @php
-                                /* @var $file */
-                                echo pathinfo($file->file_name, PATHINFO_EXTENSION);
-                            @endphp
-                        </span>
-                        <span class="">
+                        <div class="mb-2">
                             @if (Auth::check())
                                 @if(!$ePub)
-                                    <a class="btn btn-primary btn-sm"
+                                    <a class="btn btn-primary d-inline-flex align-items-center gap-2"
                                        href="{{ getFile('/resources/' . $file->file_name) }}"
                                        target="_blank"
-                                       id="track-downloads-btn"
                                        data-file="{{ $file->id }}"
                                        data-resource="{{ $resource->id }}"
-                                       onclick="downloadCounter(this)"
+                                       data-action="download-counter"
                                     >
-                                        <i class="fa fa-download" aria-hidden="true"></i> @lang('Download')
-                                        ({{ formatBytes($file->file_size) }})
+                                        <i class="ph-fill ph-download-simple"></i>
+                                        <span>
+                                            @lang('Download')
+                                            <small class="d-block opacity-75">{{ formatBytes($file->file_size) }} · {{ $file->extension }}</small>
+                                        </span>
                                     </a>
                                 @endif
                             @else
-                                @lang('Please login to download this file.')
+                                <div class="alert alert-info py-1 px-2 d-inline-flex align-items-center gap-1 small">
+                                    <i class="ph-light ph-lock"></i> @lang('Please login to download this file.')
+                                </div>
                             @endif
-                        </span>
+                        </div>
                     @endforeach
                 @endif
-                <div id="resource-title" class="row pt-md-2">
-                    <h4 class="col-md-8">{{ $resource->title }}</h4>
-                    <div class="col-md-4 {{ Lang::locale() != 'en' ? 'text-start' : 'text-end' }}">
-                        @if (isLibraryManager() or isAdmin())
-                            <a href="{{ URL::to($resource->language . '/resources/edit/step1/' . $resource->id) }}"><i
-                                    class="far fa-lg fa-edit" aria-hidden="true" title="@lang('Edit')"></i></a>
-                        @endif
-                        &nbsp;
-                        <i class="fa-solid fa-star fa-lg {{ $resource->favorites->contains('id', auth()->id()) ? 'active' : '' }}"
-                            title="@lang('Mark this resource as your favorite')" id="resourceFavorite" style="cursor: pointer;"
-                            @if (Auth::check()) onclick="favorite('resourceFavorite','{{ URL::to('resources/favorite/') }}','{{ $resource->id }}')"
-                           @else
-                               onclick="alert('Please login to mark a resource as your favorite')" @endif></i>
-                        &nbsp;
-                        <i class="fas fa-lg fa-share-alt" style="cursor: pointer;" data-bs-toggle="modal" aria-hidden="true"
-                            data-bs-target="#shareModal" title="@lang('Share this resource')"></i>
-                        <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="shareModalLabel">@lang('Share this resource')</h5>
+                <div class="bg-light py-4 mb-4">
+                    <div class="container">
+                        <div class="row align-items-center gap-3">
+                            <div class="col-md-3">
+                                <img class="img-fluid rounded shadow-sm w-100 object-fit-cover resource-hero-img"
+                                     style="max-height: 250px; font-size: 0;"
+                                     src="{{ $resource->resourceFile ? getResourceImage($resource->resourceFile->name, true) : getImagefromResource($resource->abstract, '282x254') }}"
+                                     alt="{{ $resource->title }}">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h3 class="mb-2">{{ $resource->title }}</h3>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (isLibraryManager() || isAdmin())
+                                            <a href="{{ URL::to($resource->language . '/resources/edit/step1/' . $resource->id) }}"
+                                               title="@lang('Edit')"
+                                               class="text-decoration-none">
+                                                <i class="ph-light ph-pencil-simple"></i>
+                                            </a>
+                                        @endif
+                                        <button class="btn btn-link p-0 text-decoration-none" title="@lang('Mark this resource as your favorite')"
+                                                id="resourceFavorite"
+                                                data-action="favorite"
+                                                data-resource="{{ $resource->id }}"
+                                                data-authenticated="{{ Auth::check() ? 'true' : 'false' }}">
+                                            <i class="ph-{{ $resource->favorites->contains('id', auth()->id()) ? 'fill' : 'light' }} ph-star"></i>
+                                        </button>
+                                        <button class="btn btn-link p-0 text-decoration-none"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#shareModal"
+                                                title="@lang('Share this resource')">
+                                            <i class="ph-light ph-share-network"></i>
+                                        </button>
+                                        <button class="btn btn-link p-0 text-decoration-none"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#reportModal"
+                                                title="@lang('Report this resource')">
+                                            <i class="ph-light ph-flag"></i>
+                                        </button>
                                     </div>
-                                    <div class="modal-body row justify-content-center">
-                                        <i class="fab fa-twitter fa-4x col-md-2" title="Share to Twitter"
-                                            style="color: #1da1f2; cursor: pointer;"
-                                            onclick="window.open('https://twitter.com/intent/tweet?url={{ Request::url() }}', '_blank')"></i>
-                                        <i class="fab fa-facebook fa-4x col-md-2" title="Share to Facebook"
-                                            style="color: #4267b2; cursor: pointer;"
-                                            onclick="window.open('https://www.facebook.com/sharer/sharer.php?u={{ Request::url() }}', '_blank')"></i>
-                                        <i class="fab fa-linkedin fa-4x col-md-2" title="Share to LinkedIn"
-                                            style="color: #0077b5; cursor: pointer;"
-                                            onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url={{ Request::url() }}', '_blank')"></i>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">@lang('Close')</button>
-                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    @foreach ($resource->subjects as $subject)
+                                        <a class="badge text-bg-primary text-decoration-none fs-6"
+                                           href="{{ URL::to('resources/list?subject_area=' . $subject->id) }}">
+                                            {{ $subject->name }}
+                                        </a>
+                                    @endforeach
+                                    @foreach ($resource->levels as $level)
+                                        <a class="badge text-bg-secondary text-decoration-none fs-6"
+                                           href="{{ URL::to('resources/list?level=' . $level->id) }}">
+                                            {{ $level->name }}
+                                        </a>
+                                    @endforeach
+                                    @foreach ($resource->LearningResourceTypes as $ltype)
+                                        <a class="badge border border-primary text-primary text-decoration-none fs-6"
+                                           href="{{ URL::to('resources/list?type=' . $ltype->id) }}">
+                                            {{ $ltype->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                                <div class="d-flex gap-3 text-muted small">
+                                    <span class="d-flex align-items-center gap-1">
+                                        <i class="ph-light ph-eye text-primary"></i> {{ $resource->views_count }} @lang('views')
+                                    </span>
+                                    <span class="d-flex align-items-center gap-1">
+                                        <i class="ph-light ph-star"></i> <span class="resource-favorites">{{ $resource->favorites_count }}</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        &nbsp;
-                        <i class="far fa-lg fa-flag" style="cursor: pointer;" data-bs-toggle="modal" aria-hidden="true"
-                            data-bs-target="#reportModal" title="@lang('Report this resource')"></i>
-                        <div class="modal fade" id="reportModal" tabindex="-1" role="dialog"
-                            aria-labelledby="reportModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <form method="POST" action="{{ route('flag') }}">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="reportModalLabel">@lang('Report this resource')</h5>
-                                        </div>
-                                        <div class="modal-body">
-                                            @csrf
-                                            <div class="form-group mb-3">
-                                                <label for="type">
-                                                    @lang('Type')
-                                                </label>
-                                                <select name="type"
-                                                    class="form-control{{ $errors->has('city') ? ' is-invalid' : '' }}"
-                                                    required>
-                                                    <option value="">-</option>
-                                                    <option value="1">@lang('Graphic Violence')</option>
-                                                    <option value="2">@lang('Graphic Sexual Content')</option>
-                                                    <option value="3">@lang('Spam, Scam or Fraud')</option>
-                                                    <option value="4">@lang('Broken or Empty Data')</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group mb-3">
-                                                <label for="details">
-                                                    @lang('Details')
-                                                </label>
-                                                <textarea name="details" class="form-control" rows="5" required></textarea>
-                                            </div>
-                                            <input type="hidden" value="{{ $resource->id }}" name="resource_id">
-                                            <input type="hidden" value="{{ Auth::id() }}" name="userid">
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">@lang('Close')</button>
-                                            <button type="submit" class="btn btn-primary">@lang('Submit')</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <span class="text-secondary">{{ $views->where('resource_id', $resource->id)->count() }}
-                            @lang('views')</span>
-                    </div>
-                    <div class="col-2 text-secondary">
-                        <i class="far fa-star"></i> <span
-                            class="text-secondary resource-favorites">{{ $resource->favorites_count }}</span>
-                    </div>
-                    <div class="col-8 {{ Lang::locale() != 'en' ? 'text-start' : 'text-end' }}">
-                        <a href="{{ URL::to('glossary') }}" class="glossary-icon"><i class="fas fa-globe"
-                                title="@lang('DDL Glossary')"><span class="glossary-text">&nbsp;@lang('Glossary')</span>
-                            </i></a>
                     </div>
                 </div>
                 <hr>
-                <div id="resource-view-title-box">
-
+                <div id="resource-view-title-box" class="mb-3">
                     {!! fixImage($resource->abstract, $resource->id) !!}
                 </div>
-                <br>
-                <h5 class="py-1 pl-1"
-                    id=@if (LaravelLocalization::getCurrentLocaleDirection() == 'ltr') "meta-box-title" @else "meta-box-title-rtl" @endif>
-                    @lang('About this resource')</h5>
-                <div class="row mb-2 pl-2">
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('Available in the following languages')</h6>
-                        <ul>
-                            @foreach ($languages_available as $locale => $properties)
-                                <li>
-                                    <a rel="alternate" title="language" hreflang="{{ $locale }}"
-                                        href="{{ LaravelLocalization::getLocalizedURL($locale, $properties['url'], [], true) }}">
-                                        {{ $properties['native'] }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="py-1 ps-1" id="meta-box-title">@lang('About this resource')</h5>
                     </div>
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('Subject area')</h6>
-                        @foreach ($resource->subjects as $subject)
-                            <a class="badge text-bg-primary"
-                                href="{{ URL::to('resources/list?subject_area=' . $subject->id) }}"
-                                title="{{ $subject->name }}">{{ $subject->name }}</a>
-                        @endforeach
-                    </div>
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('Resource level')</h6>
-                        @foreach ($resource->levels as $level)
-                            <a class="badge text-bg-primary" href="{{ URL::to('resources/list?level=' . $level->id) }}"
-                                title="{{ $level->name }}">{{ $level->name }}</a>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('Resource type')</h6>
-                        @foreach ($resource->LearningResourceTypes as $ltype)
-                            <p><a href="{{ URL::to('resources/list?type=' . $ltype->id) }}"
-                                    title="{{ $ltype->name }}">{{ $ltype->name }}</a></p>
-                        @endforeach
-                    </div>
-                    @if ($resource->authors[0])
-                        <div class="col-md-4 mb-1">
-                            <h6>@lang('Author')</h6>
+
+                    @if ($resource->authors->isNotEmpty())
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="ph-light ph-user text-primary"></i>
+                                <span class="fw-semibold small text-muted">@lang('Author')</span>
+                            </div>
                             @foreach ($resource->authors as $author)
-                                <p>{{ $author->name }}</p>
+                                <span class="d-block">{{ $author->name }}</span>
                             @endforeach
                         </div>
                     @endif
 
-                    @if ($resource->translators[0])
-                        <div class="col-md-4 mb-1">
-                            <h6>@lang('Translator')</h6>
-                            @foreach ($resource->translators as $translator)
-                                <p>{{ $translator->name }}</p>
+                    @if ($resource->publishers->isNotEmpty())
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="ph-light ph-buildings text-primary"></i>
+                                <span class="fw-semibold small text-muted">@lang('Publisher')</span>
+                            </div>
+                            @foreach ($resource->publishers as $publisher)
+                                <a class="d-block text-decoration-none" href="{{ URL::to('resources/list?publisher=' . $publisher->id) }}">{{ $publisher->name }}</a>
                             @endforeach
                         </div>
                     @endif
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('Publisher')</h6>
-                        @foreach ($resource->publishers as $publisher)
-                            <p><a href="{{ URL::to('resources/list?publisher=' . $publisher->id) }}"
-                                    title="{{ $publisher->name }}">{{ $publisher->name }}</a></p>
+
+                    @if ($resource->translators->isNotEmpty())
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="ph-light ph-translate text-primary"></i>
+                                <span class="fw-semibold small text-muted">@lang('Translator')</span>
+                            </div>
+                            @foreach ($resource->translators as $translator)
+                                <span class="d-block">{{ $translator->name }}</span>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if ($resource->creativeCommons->isNotEmpty())
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="ph-light ph-copyright text-primary"></i>
+                                <span class="fw-semibold small text-muted">@lang('License')</span>
+                            </div>
+                            <span class="badge text-bg-secondary">{{ $resource->creativeCommons->first()->name }}</span>
+                        </div>
+                    @endif
+
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="ph-light ph-globe text-primary"></i>
+                            <span class="fw-semibold small text-muted">@lang('Available in')</span>
+                        </div>
+                        @foreach ($languages_available as $locale => $properties)
+                            <a class="d-block text-decoration-none" rel="alternate" hreflang="{{ $locale }}"
+                               href="{{ LaravelLocalization::getLocalizedURL($locale, $properties['url'], [], true) }}">
+                                {{ $properties['native'] }}
+                            </a>
                         @endforeach
-                    </div>
-                    <div class="col-md-4 mb-1">
-                        <h6>@lang('License')</h6>
-                        <p class="badge text-bg-secondary">
-                            {{ $resource->creativeCommons ? $resource->creativeCommons[0]->name : '' }}</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="row">
-                    <div class="p-3">
-                        <img class="resource-view-img" src=" {{ $resource->resourceFile ?  getResourceImage($resource->resourceFile->name, true)  : getImagefromResource($resource->abstract, '282x254') }}"
-                            alt="Resource Main Image">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">@lang('Similar resources')</h6>
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body p-1">
-                        <h4>@lang('Similar resources')</h4>
-                        <hr>
+                    <div class="card-body p-2">
                         @foreach ($relatedItems as $item)
-                            <a title="@lang('Resource title')" href="{{ URL::to('resource/' . $item->id) }}">
-                                <div class="row mb-2 similar-resources">
-                                    <div class="d-none d-lg-block col-lg-4">
-                                        <img class="resource-view-img"
-                                            src="{{ getResourceImage($item->name, true) }}"
-                                            alt="Resource Image">
+                            <a title="{{ $item->title }}" href="{{ URL::to('resource/' . $item->id) }}" class="text-decoration-none">
+                                <div class="d-flex gap-2 p-2 rounded similar-resource-item mb-1">
+                                    <div class="d-none d-lg-block flex-shrink-0">
+                                        <img class="w-100 h-100 object-fit-cover"
+                                             src="{{ getResourceImage($item->name, true) }}"
+                                             alt="{{ $item->title }}">
                                     </div>
-                                    <div class="col-12 col-lg-8">
-                                        {{ $item->title }}<br />
-                                        <span class="similar-resources-text">
-                                            {!! str_limit(strip_tags($item->abstract), 25) !!}
-                                        </span>
+                                    <div class="overflow-hidden">
+                                        <span class="d-block fw-semibold small text-dark text-truncate">{{ $item->title }}</span>
+                                        <span class="d-block small text-muted">{{ Str::limit(strip_tags($item->abstract), 60) }}</span>
                                     </div>
                                 </div>
                             </a>
@@ -348,8 +262,8 @@
 
                 <div class="card mt-3">
                     <div class="card-body p-3">
-                        @if (isAdmin() or isLibraryManager())
-                            @if (isset($resource->user))
+                        @if (isAdmin() || isLibraryManager())
+                            @if ($resource->user)
                                 <p>@lang('Added by'):
                                     <a href="{{ route('user-view', $resource->user->id) }}">
                                         {{ $resource->user->username }}
@@ -376,15 +290,15 @@
                             <div class="mt-2">
                                 <strong>@lang('Linked resources:')</strong>
                             </div>
-                            @foreach ($translations as $resource)
+                            @foreach ($translations as $translation)
                                 <div class="d-flex gap-1 mt-1 bg-secondary-subtle p-2">
                                     <div class="p-1">
                                         {{ $loop->iteration }}.
                                     </div>
                                     <div class="p-1">
-                                        <a href="{{ URL::to($resource->language . '/resource/' . $resource->id) }}"
+                                        <a href="{{ URL::to($translation->language . '/resource/' . $translation->id) }}"
                                             target="_blank">
-                                            {{ $resource->title }} ({{ $resource->language }})
+                                            {{ $translation->title }} ({{ $translation->language }})
                                         </a>
                                     </div>
                                 </div>
@@ -393,49 +307,18 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <h5>{{ count($comments) }} @lang('Comment(s)')</h5>
-                <form method="POST" action="{{ route('comment') }}">
-                    @csrf
-                    @honeypot
-                    <input type="hidden" value="{{ $resource->id }}" name="resource_id">
-                    <input type="hidden" value="{{ Auth::id() }}" name="userid">
-                    <div class="form-group mb-3">
-                        <label for="commentTextArea">
-                            @if (Auth::check())
-                                @lang('Enter your comment below')
-                            @else
-                                @lang('Please login to add a comment')
-                            @endif
-                        </label>
-                        <textarea class="form-control" name="comment" id="commentTextArea" rows="3"
-                            @if (!Auth::check()) disabled @endif required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary offset-md-11"
-                        @if (!Auth::check()) disabled @endif>@lang('Submit')</button>
-                </form>
-
-                @foreach ($comments as $cm)
-                    <div class="card m-2">
-                        <div class="card-body">
-                            <p class="card-text">{{ $cm->comment }}</p>
-                            <span style="font-size: 12px; color: #535659;">
-                                @lang('By :user', ['user' => $cm->user->username])
-                            </span>&nbsp;
-                            <span style="font-size: 10px; color: #8795a1;">
-                                {{ $cm->created_at->diffForHumans() }}
-                            </span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            @include('resources.partials.comments')
         </div>
     </div>
-
+    @include('resources.partials.share-modal')
+    @include('resources.partials.report-modal')
 @endsection
+@if ($ePub)
+    <div id="app" data-file-route="{{ $ePub }}"></div>
+@endif
+
 @push('scripts')
     @if ($ePub)
-        <div id="app" data-file-route="{{ $ePub }}"></div>
         @vite('resources/assets/js/epub.jsx')
     @endif
 @endpush

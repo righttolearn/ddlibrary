@@ -65,7 +65,7 @@
         @else
             <h2 class="text-center">@lang('No records found!')</h2>
         @endif
-        <div class="resource-pagination">
+        <div class="d-flex justify-content-center mt-4">
             {{ $resources->appends(request()->input())->links() }}
         </div>
     </div>

@@ -58,7 +58,7 @@ class ResourceController extends Controller
      *
      * @return void
      */
-    public function __construct() {}
+    public function __construct(private readonly Resource $resource) {}
 
     public function index(Request $request): Factory|View|Application
     {
@@ -235,15 +235,13 @@ class ResourceController extends Controller
     /**
      * @throws SupportedLocalesNotDefined
      */
-    public function viewPublicResource(Request $request, $resourceId): View|Factory|Redirector|RedirectResponse|Application
+    public function viewPublicResource(Request $request, $resourceId): View
     {
-        DDLClearSession();
-        $myResources = new Resource;
-
-        $resource = Resource::with(['attachments', 'resourceFile:id,name'])
-            ->with('favorites', function ($query) {
-                $query->where('users.id', auth()->id());
-            })
+        $resource = Resource::with([
+            'attachments',
+            'resourceFile:id,name',
+            'favorites' => fn($q) => $q->where('users.id', auth()->id())
+        ])
             ->withCount('favorites')
             ->findOrFail($resourceId);
 
@@ -251,64 +249,32 @@ class ResourceController extends Controller
             abort(403);
         }
 
+        $resource->load('subjects', 'levels', 'LearningResourceTypes', 'authors', 'translators', 'publishers', 'creativeCommons');
+        $resource->attachments->each(function ($file) {
+            $file->extension = pathinfo($file->file_name, PATHINFO_EXTENSION);
+        });
+
+        $relatedItems = $this->resource->getRelatedResources($resourceId, $resource->subjects);
+        $comments = ResourceComment::where('resource_id', $resourceId)->published()->get();
+        $comments->load('user');
+
         $this->pageView($request, $resource->title); // TODO: To be deprecated
+        $this->resourceViewCounter($request, $resourceId); // TODO: To be deprecated
         Resource::where('id', $resourceId)->increment('views_count');
 
-        $relatedItems = $myResources->getRelatedResources($resourceId, $resource->subjects);
-        $comments = ResourceComment::where('resource_id', $resourceId)->published()->get();
-        $languages_available = [];
+        ['languages_available' => $languages_available, 'translations' => $translations] = $this->resolveAvailableLanguages($resource);
 
-        $translation_id = $resource->tnid;
-        $translations = null;
-        if ($translation_id) {
-            $translations = $myResources->getResourceTranslations($translation_id);
-            $supportedLocals = [];
-            $newId = [];
-            foreach (config('laravellocalization.localesOrder') as $localeCode) {
-                $supportedLocals[] = $localeCode;
-            }
-
-            if ($translations) {
-                foreach ($translations as $tr) {
-                    if (in_array($tr->language, $supportedLocals)) {
-                        $newId[$tr->language] = $tr->id;
-                    }
-                }
-            }
-
-            foreach (\LaravelLocalization::getSupportedLocales() as $localeCode => $properties) {
-                if (isset($newId[$localeCode]) && $newId != 0) {
-                    $currentUrl = explode('/', url()->current());
-                    $index = count($currentUrl) - 1;
-                    $currentUrl[$index] = $newId[$localeCode];
-                    $newUrl = implode('/', $currentUrl);
-                    $languages_available[$localeCode]['url'] = $newUrl;
-                    $languages_available[$localeCode]['native'] = $properties['native'];
-                }
-            }
-        }
-        $this->resourceViewCounter($request, $resourceId);
-        $views = new ResourceView;
-        Carbon::setLocale(app()->getLocale());
-
-        $ePub = null;
-        $ePubFile = $resource->attachments->where('file_mime', 'application/epub+zip')->first();
-        if ($ePubFile) {
-            if (config('app.env') != 'production') {
-                $ePub = asset('files/resources/'.$ePubFile->file_name);
-            } else {
-                $ePub = getFile("resources/$ePubFile->file_name");
-            }
-        }
+        $ePub = $this->resolveEpubUrl($resource);
 
         return view('resources.resources_view', compact(
             'resource',
             'relatedItems',
             'comments',
             'languages_available',
-            'views',
             'translations',
-            'ePub'
+            'ePub',
+            'prevArrow',
+            'nextArrow'
         ));
     }
 
@@ -773,7 +739,7 @@ class ResourceController extends Controller
 
     public function flag(Request $request): Redirector|Application|RedirectResponse
     {
-        $userId = $request->input('userid');
+        $userId = auth()->id();
         $resourceId = $request->input('resource_id');
 
         if (empty($userId)) {
@@ -795,7 +761,7 @@ class ResourceController extends Controller
 
     public function comment(Request $request): Redirector|Application|RedirectResponse
     {
-        $userId = $request->input('userid');
+        $userId = auth()->id();
         $resourceId = $request->input('resource_id');
 
         if (empty($userId)) {
@@ -1613,5 +1579,51 @@ class ResourceController extends Controller
         }
 
         return $request;
+    }
+
+    private function resolveAvailableLanguages(Resource $resource): array
+    {
+        $translation_id = $resource->tnid;
+
+        if (!$translation_id) {
+            return ['languages_available' => [], 'translations' => null];
+        }
+
+        $translations = $this->resource->getResourceTranslations($translation_id);
+
+        if (!$translations) {
+            return ['languages_available' => [], 'translations' => null];
+        }
+
+        $supportedLocals = array_keys(config('laravellocalization.localesOrder'));
+
+        $newId = $translations
+            ->filter(fn($tr) => in_array($tr->language, $supportedLocals))
+            ->pluck('id', 'language')
+            ->toArray();
+
+        $languages_available = [];
+        foreach (\LaravelLocalization::getSupportedLocales() as $localeCode => $properties) {
+            if (isset($newId[$localeCode]) && $newId[$localeCode] != 0) {
+                $currentUrl = explode('/', url()->current());
+                $currentUrl[count($currentUrl) - 1] = $newId[$localeCode];
+                $languages_available[$localeCode] = [
+                    'url'    => implode('/', $currentUrl),
+                    'native' => $properties['native'],
+                ];
+            }
+        }
+
+        return ['languages_available' => $languages_available, 'translations' => $translations];
+    }
+
+    private function resolveEpubUrl(Resource $resource): ?string
+    {
+        $ePubFile = $resource->attachments->where('file_mime', 'application/epub+zip')->first();
+        if (!$ePubFile) return null;
+
+        return config('app.env') != 'production'
+            ? asset('files/resources/' . $ePubFile->file_name)
+            : getFile("resources/{$ePubFile->file_name}");
     }
 }
