@@ -22,7 +22,8 @@ class GlossaryController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Application|BladeView|Factory|false|View
+     * @param Request $request
+     * @return View
      */
     public function index(Request $request): View
     {
@@ -113,9 +114,9 @@ class GlossaryController extends Controller
         $glossary_id = (int) $data[0];  // id of the glossary item
         $type = $data[1];  // possible input - 'glossary'
         $locale = $data[2];  // valid when $type is 'glossary'. Can be 'en', 'fa' or 'ps'
-        $string = htmlspecialchars_decode($data[3]);  // the edited string
+        $string = strip_tags($data[3]);  // the stripped string
 
-        if (($glossary_id or $type or $locale or $string) == null) {
+        if (!$glossary_id || !$type || !$locale || !$string) {
             return response()->json(['msg' => 'error'], 400);
         }
 
@@ -146,7 +147,7 @@ class GlossaryController extends Controller
      */
     public function destroy($glossary_id = null): JsonResponse
     {
-        $glossary = Glossary::where('id', $glossary_id)->first();
+        $glossary = Glossary::findOrFail($glossary_id);
         if (! $glossary) {
             return response()->json(['msg' => 'error'], 400);
         }
@@ -157,7 +158,7 @@ class GlossaryController extends Controller
 
     public function approve($glossary_id = null): JsonResponse
     {
-        $glossary = Glossary::where('id', $glossary_id)->first();
+        $glossary = Glossary::findOrFail($glossary_id);
         if (! $glossary) {
             return response()->json(['msg' => 'error'], 400);
         }
