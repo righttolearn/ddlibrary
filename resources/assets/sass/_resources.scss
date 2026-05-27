@@ -101,3 +101,13 @@
     transform: scale(1.05);
   }
 }
+
+#preview {
+  max-height: 300px;
+  display: none;
+}
+
+#cropper {
+  width: 100%;
+  height: 300px;
+}
