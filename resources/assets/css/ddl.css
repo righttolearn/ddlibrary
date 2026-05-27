@@ -163,34 +163,6 @@ select.form-control:focus::-ms-value {
     margin: .5em 0em .5em 0em;
 }
 
-.glossary-icon {
-    color: #777777;
-}
-
-.glossary-accordion{
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    outline: none;
-    transition: 0.4s;
-    box-sizing: border-box;
-    border-radius: .1rem;
-    -webkit-border-radius: .1rem;
-    -moz-border-radius: .1rem;
-}
-.glossary-text-sidebar{
-    font-family: Arial, serif !important;
-    font-weight: normal !important;
-}
-.glossary-text{
-    font-family: Arial, serif !important;
-    font-size: 17px !important;
-    font-weight: lighter;
-}
-
 .ck-editor__editable {
     min-height: 200px;
 }
@@ -260,10 +232,6 @@ th {
 th, td {
     text-align: left;
     padding: 8px;
-}
-
-.glossary .form-control {
-    display: inline;
 }
 
 tr:nth-child(even){background-color: #f2f2f2}
