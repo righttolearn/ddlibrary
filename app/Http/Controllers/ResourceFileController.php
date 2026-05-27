@@ -119,6 +119,6 @@ class ResourceFileController extends Controller
         $count = $query->count();
         $files = $query->orderByDesc('created_at')->paginate(16)->appends(Arr::except($request->all(), ['page']));
 
-        return view('resources.partial.file-list', compact('count', 'files'));
+        return view('resources.partials.file-list', compact('count', 'files'));
     }
 }

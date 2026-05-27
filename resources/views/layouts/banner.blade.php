@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg px-2 navbar-light">
+<nav class="navbar navbar-expand-lg px-2 navbar-light border-bottom">
     <a href="{{ URL::to('/') }}" class="navbar-brand" title="Darakht-e Danesh Library logo">
         <img src="{{ Storage::url('files/logo-dd.png') }}" alt="DD Library logo">
     </a>

@@ -41,8 +41,6 @@ class HomeController extends Controller
         $subjectAreas = Cache::remember("subject_areas_{$languageCode}", 3600, fn() => $resources->subjectIconsAndTotal());
         $featured = Cache::remember("featured_collections_{$languageCode}", 3600, fn() => $resources->featuredCollections());
 
-        $appLocale = app()->getLocale();
-        Carbon::setLocale($appLocale);
         // $surveys = Survey::find(1);
         // $surveyQuestions = SurveyQuestion::where('survey_id', 1)->first();
         // $surveyQuestionOptions = SurveyQuestionOption::where('question_id', 1)->get();

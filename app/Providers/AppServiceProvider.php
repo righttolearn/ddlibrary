@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\News;
 use App\Models\Resource;
+use Carbon\Carbon;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+        Carbon::setLocale(app()->getLocale());
 
         View::composer('layouts.footer', function ($view) {
             $lang = config('app.locale');
