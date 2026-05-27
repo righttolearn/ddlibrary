@@ -12,7 +12,6 @@ export default defineConfig({
                 'resources/assets/sass/app.scss',
                 'resources/assets/js/ddl.jsx',
                 'resources/assets/js/epub.jsx',
-                'resources/assets/js/resource.jsx',
                 'resources/assets/js/tinymce.js',
             ],
             refresh: true,
