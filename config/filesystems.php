@@ -2,6 +2,7 @@
 
 return [
 
+    'default' => env('FILESYSTEM_DISK', 'public'),
     'disks' => [
         'local' => [
             'driver' => 'local',

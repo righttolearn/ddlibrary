@@ -370,13 +370,9 @@ class ResourceController extends Controller
                 $fileSize = $attachments->getSize();
                 $fileName = $attachments->getClientOriginalName();
                 $fileExtension = \File::extension($fileName);
-                $diskType = 's3';
-                if (config('app.env') != 'production') {
-                    $diskType = 'public';
-                }
                 $uniqueId = uniqid(); // Generate a unique ID
                 $fileName = auth()->user()->id.'_'.$uniqueId.'_'.time().'.'.$fileExtension;
-                Storage::disk($diskType)->put('resources/'.$fileName, file_get_contents($attachments));
+                Storage::put('resources/'.$fileName, file_get_contents($attachments));
                 $validatedData['attc'][] = [
                     'file_name' => $fileName,
                     'file_size' => $fileSize,
@@ -981,12 +977,8 @@ class ResourceController extends Controller
                 $fileExtension = \File::extension($fileName);
                 $uniqueId = uniqid(); // Generate a unique ID
                 $fileName = auth()->user()->id.'_'.$uniqueId.'_'.time().'.'.$fileExtension;
-                $diskType = 's3';
-                if (config('app.env') != 'production') {
-                    $diskType = 'public';
-                }
                 unset($validatedData['attachments']);
-                Storage::disk($diskType)->put('resources/'.$fileName, file_get_contents($attachments));
+                Storage::put('resources/'.$fileName, file_get_contents($attachments));
                 $validatedData['attc'][] = [
                     'file_name' => $fileName,
                     'file_size' => $fileSize,
@@ -1422,12 +1414,11 @@ class ResourceController extends Controller
         try {
             // 1. Delete physical attachment files from storage and database records
             $attachments = ResourceAttachment::where('resource_id', $resourceId)->get();
-            $diskType = config('app.env') != 'production' ? 'public' : 's3';
 
             foreach ($attachments as $attachment) {
                 try {
                     // Delete physical file from storage
-                    Storage::disk($diskType)->delete('resources/'.$attachment->file_name);
+                    Storage::delete('resources/'.$attachment->file_name);
                 } catch (\Exception $e) {
                     Log::warning("Failed to delete attachment file: {$attachment->file_name}", [
                         'error' => $e->getMessage(),
@@ -1450,10 +1441,8 @@ class ResourceController extends Controller
                             ->first();
 
                         if (! $otherResourcesUsingFile) {
-                            $diskType = config('app.env') != 'production' ? 'public' : 's3';
-
                             try {
-                                Storage::disk($diskType)->delete('files/'.$resourceFile->name);
+                                Storage::delete('files/'.$resourceFile->name);
                             } catch (Exception $e) {
                                 Log::warning("Failed to delete ResourceFile main file: {$resourceFile->name}", [
                                     'error' => $e->getMessage(),
@@ -1462,7 +1451,7 @@ class ResourceController extends Controller
                             }
 
                             try {
-                                Storage::disk($diskType)->delete('files/thumbnails/'.$resourceFile->name);
+                                Storage::delete('files/thumbnails/'.$resourceFile->name);
                             } catch (Exception $e) {
                                 Log::warning("Failed to delete ResourceFile thumbnail: {$resourceFile->name}", [
                                     'error' => $e->getMessage(),
