@@ -38,14 +38,14 @@ class Resource extends Model
         return $this->belongsToMany(TaxonomyTerm::class, 'resource_levels', 'resource_id', 'tid');
     }
 
-    public function IamAuthors()
+    public function iamAuthors()
     {
         return $this->HasOne(ResourceIamAuthor::class);
     }
 
-    public function keywords(): HasMany
+    public function keywords(): BelongsToMany
     {
-        return $this->hasMany(ResourceKeyword::class);
+        return $this->belongsToMany(TaxonomyTerm::class, 'resource_keywords', 'resource_id', 'tid');
     }
 
     public function LearningResourceTypes(): BelongsToMany
@@ -113,7 +113,7 @@ class Resource extends Model
         return $this->belongsToMany(TaxonomyTerm::class, 'resource_creative_commons', 'resource_id', 'tid');
     }
 
-    public function EducationalResources(): HasMany
+    public function educationalResources(): HasMany
     {
         return $this->hasMany(ResourceEducationalResource::class);
     }
@@ -511,7 +511,7 @@ class Resource extends Model
             })
             ->join('static_subject_area_icons AS sticons', 'sticons.tid', '=', 'ttd.id')
             ->where('ttd.language', $lang)
-            ->groupBy('sarea.tid', 'sticons.file_name', 'ttd.name', 'ttd.id')
+            ->groupBy('sarea.tid', 'sticons.file_name', 'sticons.phosphor_icon', 'ttd.name', 'ttd.id')
             ->get();
     }
 
@@ -601,5 +601,10 @@ class Resource extends Model
     public function resourceFile(): BelongsTo
     {
         return $this->belongsTo(ResourceFile::class);
+    }
+
+    public function educationalUses(): BelongsToMany
+    {
+        return $this->belongsToMany(TaxonomyTerm::class, 'resource_educational_uses', 'resource_id', 'tid');
     }
 }
