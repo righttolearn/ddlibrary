@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/autocomplete';
 import './image_manager.jsx';
+import TomSelect from 'tom-select';
+import 'tom-select/dist/css/tom-select.bootstrap5.css';
 
 window.bringMeAttr = function (id, url)
 {
@@ -51,16 +53,7 @@ function extractLast( term ) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[data-action="autocomplete"]').forEach(input => {
-        bringMeAttr(input.id, input.dataset.url);
-    });
 
-    // Translation toggle
-    document.addEventListener('change', (e) => {
-        const toggle = e.target.closest('[data-action="toggle-translation"]');
-        if (!toggle) return;
-        document.querySelector('.translation').classList.toggle('d-none', !toggle.checked);
-    });
 });
 
 function toggleTranslation(checkbox) {
@@ -75,8 +68,73 @@ function toggleTranslation(checkbox) {
     }
 }
 
-document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-    new bootstrap.Tooltip(el);
+// Remove attachment (add a new resource)
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.remove-attachment');
+    if (!btn) return;
+    if (!confirm(btn.dataset.confirm)) return;
+    document.querySelector(`.${btn.dataset.target}`)?.remove();
+});
+
+// Add more attachments
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add_more');
+    if (!btn) return;
+    e.preventDefault();
+    const randomNumber = Math.ceil(Math.random() * 1000);
+    const div = document.createElement('div');
+    div.className = `d-flex gap-3 mb-2 attachment-${randomNumber}`;
+    div.innerHTML = `
+        <div class="flex-grow-1">
+            <input class="form-control" name="attachments[]" type="file">
+        </div>
+        <div class="align-self-center">
+            <button type="button" class="btn btn-link p-0 text-danger remove-attachment" data-target="attachment-${randomNumber}">
+                <i class="ph-light ph-trash"></i>
+            </button>
+        </div>
+    `;
+    btn.before(div);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-action="autocomplete"]').forEach(input => {
+        bringMeAttr(input.id, input.dataset.url);
+    });
+
+    // Translation toggle
+    document.addEventListener('change', (e) => {
+        const toggle = e.target.closest('[data-action="toggle-translation"]');
+        if (!toggle) return;
+        document.querySelector('.translation').classList.toggle('d-none', !toggle.checked);
+    });
+
+    ['learning_resources_types', 'educational_use', 'subject_areas'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        new TomSelect(el, {
+            plugins: ['remove_button'],
+            placeholder: '...',
+        });
+    });
+});
+
+document.addEventListener('change', (e) => {
+    const checkbox = e.target.closest('[data-action="level-toggle"]');
+    if (!checkbox) return;
+
+    const target = document.getElementById(checkbox.dataset.target);
+    if (!target) return;
+
+    target.querySelectorAll('.js-child').forEach(child => {
+        child.checked = checkbox.checked;
+    });
+});
+
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-action="confirm-delete"]');
+    if (!link) return;
+    if (!confirm(link.dataset.confirm)) e.preventDefault();
 });
 
 window.toggleTranslation = toggleTranslation;

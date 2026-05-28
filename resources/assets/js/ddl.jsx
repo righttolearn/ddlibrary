@@ -14,141 +14,9 @@ window.bootstrap = bootstrap;
 
 if(window.jQuery){
     $(document).ready(function(){
-        $('.add_more').click(function(e){
-            let randomNumber = Math.ceil(Math.random() * 1000)
-            e.preventDefault();
-            $(this).before(`
-                <div class="d-flex gap-3 attachment-${randomNumber}">
-                    <div class="flex-grow-1 align-items-center">
-                        <input id="resource-file-${randomNumber}"
-                            class="form-control col-md-6"
-                            id="attachments" name="attachments[]" type="file">
-                    </div>
-                    <div class="align-self-center">
-                        <span class="fa fa-trash text-danger" onclick="removeAttachment('attachment-${randomNumber}')"></span>
-                    </div>
-                </div>
-            `);
-        });
 
         $('input[type="checkbox"]').click(function(e){
             $('#side-submit').show();
-        });
-
-        window.addEventListener('load', function() {
-            (function() {
-                const subjectAreasSelect = document.getElementById('subject_areas');
-                const subjectAreasSearch = document.getElementById('subject_areas_search');
-                const subjectAreasWrapper = document.getElementById('subject_areas_wrapper');
-
-                if (!subjectAreasSelect || !subjectAreasSearch) return;
-
-                // Show search box when select is focused/clicked
-                subjectAreasSelect.addEventListener('focus', function() {
-                    subjectAreasSearch.style.display = 'block';
-                    setTimeout(function() {
-                        subjectAreasSearch.focus();
-                    }, 0);
-                });
-
-                subjectAreasSelect.addEventListener('click', function() {
-                    subjectAreasSearch.style.display = 'block';
-                    setTimeout(function() {
-                        subjectAreasSearch.focus();
-                    }, 0);
-                });
-
-                // Store all original options
-                const originalOptions = [];
-                const optgroups = subjectAreasSelect.querySelectorAll('optgroup');
-
-                optgroups.forEach(function(optgroup) {
-                    const groupLabel = optgroup.getAttribute('label');
-                    const options = Array.from(optgroup.querySelectorAll('option'));
-                    originalOptions.push({
-                        optgroup: optgroup,
-                        label: groupLabel,
-                        options: options.map(function(opt) {
-                            return {
-                                element: opt,
-                                value: opt.value,
-                                text: opt.textContent.trim()
-                            };
-                        })
-                    });
-                });
-
-                // Filter function
-                function filterOptions(searchTerm) {
-                    const searchLower = searchTerm.toLowerCase().trim();
-
-                    originalOptions.forEach(function(group) {
-                        let groupMatches = false;
-                        let hasVisibleOptions = false;
-
-                        // Check if group label matches
-                        if (group.label.toLowerCase().includes(searchLower)) {
-                            groupMatches = true;
-                        }
-
-                        // Filter options within the group
-                        group.options.forEach(function(option) {
-                            const optionMatches = option.text.toLowerCase().includes(searchLower);
-
-                            if (searchTerm === '' || groupMatches || optionMatches) {
-                                option.element.style.display = '';
-                                hasVisibleOptions = true;
-                            } else {
-                                option.element.style.display = 'none';
-                            }
-                        });
-
-                        // Show/hide optgroup based on matches
-                        if (searchTerm === '' || hasVisibleOptions) {
-                            group.optgroup.style.display = '';
-                        } else {
-                            group.optgroup.style.display = 'none';
-                        }
-                    });
-                }
-
-                // Handle search input
-                subjectAreasSearch.addEventListener('input', function(e) {
-                    filterOptions(e.target.value);
-                });
-
-                // Handle keyboard navigation
-                subjectAreasSearch.addEventListener('keydown', function(e) {
-                    // Allow arrow keys to pass through to select
-                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        subjectAreasSelect.focus();
-                        // Trigger arrow key on select
-                        const event = new KeyboardEvent('keydown', {
-                            key: e.key,
-                            bubbles: true
-                        });
-                        subjectAreasSelect.dispatchEvent(event);
-                    }
-                });
-
-                // Hide search box when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!subjectAreasWrapper.contains(e.target)) {
-                        subjectAreasSearch.style.display = 'none';
-                        subjectAreasSearch.value = '';
-                        filterOptions('');
-                    }
-                });
-
-                // Keep search box visible when interacting with select
-                subjectAreasSelect.addEventListener('mousedown', function() {
-                    subjectAreasSearch.style.display = 'block';
-                    setTimeout(function() {
-                        subjectAreasSearch.focus();
-                    }, 0);
-                });
-            })();
         });
     });
 }
@@ -199,14 +67,6 @@ window.showHide = function (itself, elementId)
         itself.className += " js-fa-plus";
     } else { 
         itself.className = itself.className.replace(" js-fa-plus", " fa-minus");
-    }
-}
-
-window.fnTest = function (check, cchild){
-    if($(check).is(':checked')){
-        $(check).siblings('#'. cchild).find('.js-child').prop("checked",true);
-    }else{
-        $(check).siblings('#'.cchild).find('.js-child').prop("checked",false);        
     }
 }
 
