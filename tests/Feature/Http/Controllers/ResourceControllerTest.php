@@ -1478,11 +1478,11 @@ class ResourceControllerTest extends TestCase
         $this->assertNotNull($dbRecords->TranslationRights);
         $this->assertEquals(1, $dbRecords->TranslationRights->value);
 
-        $this->assertTrue($dbRecords->EducationalResources->isNotEmpty());
-        $this->assertEquals(1, $dbRecords->EducationalResources->first()->value);
+        $this->assertTrue($dbRecords->educationalResources->isNotEmpty());
+        $this->assertEquals(1, $dbRecords->educationalResources->first()->value);
 
-        $this->assertNotNull($dbRecords->IamAuthors);
-        $this->assertEquals(1, $dbRecords->IamAuthors->value);
+        $this->assertNotNull($dbRecords->iamAuthors);
+        $this->assertEquals(1, $dbRecords->iamAuthors->value);
 
         $this->assertNotNull($dbRecords->CopyrightHolder);
         $this->assertEquals('Original Copyright Holder', $dbRecords->CopyrightHolder->value);
@@ -1570,13 +1570,13 @@ class ResourceControllerTest extends TestCase
 
         $this->assertNotNull($resource->TranslationRights);
         $this->assertEquals(1, $resource->TranslationRights->value);
-        $this->assertTrue($resource->EducationalResources->isNotEmpty());
-        $this->assertEquals(1, $resource->EducationalResources->first()->value);
+        $this->assertTrue($resource->educationalResources->isNotEmpty());
+        $this->assertEquals(1, $resource->educationalResources->first()->value);
         $this->assertNotNull($resource->CopyrightHolder);
         $this->assertEquals('Updated Copyright Holder', $resource->CopyrightHolder->value);
         $this->assertTrue($resource->creativeCommons->contains($creativeCommons->id));
-        $this->assertNotNull($resource->IamAuthors);
-        $this->assertEquals(0, $resource->IamAuthors->value);
+        $this->assertNotNull($resource->iamAuthors);
+        $this->assertEquals(0, $resource->iamAuthors->value);
     }
 
     #[Test]
