@@ -10,6 +10,11 @@ class ResourcePublisher extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'resource_id',
+        'tid',
+    ];
+
     /**
      * Indicates if the model should be timestamped.
      *

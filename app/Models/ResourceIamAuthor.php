@@ -10,6 +10,11 @@ class ResourceIamAuthor extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'value',
+        'resource_id',
+    ];
+
     /**
      * Indicates if the model should be timestamped.
      *

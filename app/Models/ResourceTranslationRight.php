@@ -10,6 +10,11 @@ class ResourceTranslationRight extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'resource_id',
+        'value',
+    ];
+
     /**
      * Indicates if the model should be timestamped.
      *
