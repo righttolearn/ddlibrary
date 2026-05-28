@@ -1,5 +1,6 @@
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import axios from 'axios';
 
 async function searchImages(url = null) {
     const subjectArea = document.getElementById('subject_areas')?.value ?? '';
@@ -113,7 +114,7 @@ async function uploadNewImage() {
         if (error.response?.status === 422) {
             displayErrors(error.response.data.errors);
         } else {
-            alert('Error uploading image. Please try again.');
+            alert('Error uploading image. Please try again. ' + error);
         }
     } finally {
         submitButton.disabled = false;
@@ -146,10 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('cropper-image').addEventListener('change', function(event) {
         const files = event.target.files;
-        const done = (url) => {
-            document.getElementById('cropper-image').value = '';
-            return url;
-        };
 
         if (files && files.length > 0) {
             const reader = new FileReader();
@@ -173,8 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     responsive: true,
                     ready() {
                         // Show the download button when the cropper is ready
-                        document.getElementById('download-cropped-image').style
-                            .display = 'block';
+                        document.getElementById('download-cropped-image').classList.remove('d-none');
                     }
                 });
 
@@ -197,6 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const fileInput = document.getElementById('image');
                 fileInput.files = dataTransfer.files;
+
+                const uploadTab = document.querySelector('[data-bs-target="#upload-image-content"]');
+                bootstrap.Tab.getOrCreateInstance(uploadTab).show();
 
                 selectNewImage({ target: { files: dataTransfer.files } });
             });
