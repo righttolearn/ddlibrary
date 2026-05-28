@@ -108,7 +108,7 @@
                                     <h3 class="mb-2">{{ $resource->title }}</h3>
                                     <div class="d-flex align-items-center gap-2">
                                         @if (isLibraryManager() || isAdmin())
-                                            <a href="{{ URL::to($resource->language . '/resources/edit/step1/' . $resource->id) }}"
+                                            <a href="{{ route('resource.form.edit', $resource->id) }}"
                                                title="@lang('Edit')"
                                                class="text-decoration-none">
                                                 <i class="ph-light ph-pencil-simple"></i>

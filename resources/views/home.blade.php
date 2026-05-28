@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="card border-0">
-                        <img src="{{ Storage::url('files/Girls_studying.png') }}"
+                        <img src="{{ Storage::url('Girls_studying.png') }}"
                              class="card-img-top rounded-0 w-100 object-fit-cover"
                              alt="Girls studying"
                              style="height: 300px;"

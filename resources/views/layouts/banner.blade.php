@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg px-2 navbar-light border-bottom">
     <a href="{{ URL::to('/') }}" class="navbar-brand" title="Darakht-e Danesh Library logo">
-        <img src="{{ Storage::url('files/logo-dd.png') }}" alt="DD Library logo">
+        <img src="{{ Storage::url('logo-dd.png') }}" alt="DD Library logo">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -84,7 +84,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ URL::to('add/resourcefile') }}"><i class="fas fa-upload"></i> @lang('Submit')</a>
+                        <a class="nav-link" href="{{ route('resource.form') }}"><i class="fas fa-upload"></i> @lang('Submit')</a>
                     </li>
                     @if (Auth::check())
                         <li class="nav-item dropdown">

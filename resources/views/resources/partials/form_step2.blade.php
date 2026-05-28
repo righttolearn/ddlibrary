@@ -88,7 +88,7 @@
         </label>
         <input class="form-control{{ $errors->has('keywords') ? ' is-invalid' : '' }}"
                id="keywords" name="keywords" type="text"
-               value="{{ old('keywords', $resource['keywords'] ?? '') }}"
+               value="{{ old('keywords', $resourceKeywords) }}"
                data-action="autocomplete"
                data-url="{{ URL::to('resources/attributes/keywords') }}">
         <small class="form-text text-muted">@lang('Optional')</small>

@@ -1,9 +1,11 @@
 @extends('layouts.main')
 @section('content')
     <div class="container mt-3">
-        <h3>@lang('Add / Edit Resource')</h3>
+        <h3>{{ $edit ? __('Edit Resource') : __('Add Resource') }}</h3>
         <hr>
-        <form method="POST" action="..." enctype="multipart/form-data">
+        <form method="POST"
+              action="{{ $edit ? route('resource.save.edit', $resource->id) : route('resource.save') }}"
+              enctype="multipart/form-data">
             @csrf
             <div class="accordion" id="resourceAccordion">
 
