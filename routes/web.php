@@ -96,7 +96,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('resources/add/step3', [ResourceController::class, 'createStepThree'])->name('step3')->middleware('auth')->middleware('verified');
     Route::post('resources/add/step3', [ResourceController::class, 'postStepThree'])->middleware(ProtectAgainstSpam::class);
     Route::get('resources/attributes/{entity}', [ResourceController::class, 'attributes']);
-    Route::post('resources/flag', [ResourceController::class, 'flag'])->name('flag');
+    Route::post('resources/flag', [ResourceController::class, 'flag'])->name('flag')->middleware(ProtectAgainstSpam::class);
     Route::post('resources/comment', [ResourceController::class, 'comment'])->name('comment')->middleware('auth')->middleware('verified');
     Route::get('admin/resource/published/{resourceId}', [ResourceController::class, 'published']);
     Route::get('admin/resource/delete/{resourceId}', [ResourceController::class, 'deleteResource'])->middleware('admin');
@@ -106,7 +106,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::post('resources/edit/step2/{resourceId}', [ResourceController::class, 'postStepTwoEdit'])->middleware('LibraryManager');
     Route::get('resources/edit/step3/{resourceId}', [ResourceController::class, 'createStepThreeEdit'])->name('edit3')->middleware('LibraryManager');
     Route::post('resources/edit/step3/{resourceId}', [ResourceController::class, 'postStepThreeEdit'])->middleware('LibraryManager');
-    Route::post('resource/{resourceId}', [ResourceController::class, 'updateTid'])->middleware('admin')->name('updatetid');
+    Route::post('resource/{resourceId}', [ResourceController::class, 'updateTid'])->middleware('admin', ProtectAgainstSpam::class)->name('updatetid');
     // delete a file
     Route::get('delete/file/{resourceId}/{fileName}', [ResourceController::class, 'deleteFile'])->name('delete-file')->middleware('LibraryManager');;
     // Contact
@@ -373,7 +373,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     });
 });
 
-Route::post('/upload-image', [ResourceFileController::class, 'uploadImage'])->name('upload.image');
+Route::post('/upload-image', [ResourceFileController::class, 'uploadImage'])->name('upload.image')->middleware(ProtectAgainstSpam::class);
 Route::get('/search-images', [ResourceFileController::class, 'searchImages'])->name('search.images');
 Route::post('upload-image-from-editor', [FileController::class, 'uploadtImageFromEditor'])->name('upload.image.from.editor')->middleware('auth');
 
