@@ -671,4 +671,11 @@ if (! function_exists('watermark_pdf')) {
         }
     }
 
+    if (! function_exists('diskType')) {
+        function diskType(): string
+        {
+            return (config('app.env') == 'production') ? 's3' : 'public';
+        }
+    }
+
 }

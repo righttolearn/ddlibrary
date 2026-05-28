@@ -43,10 +43,7 @@ class ResourceFileController extends Controller
         $filelabel = auth()->user()->id.'_'.time().'.'.$file->getClientOriginalExtension();
         $path = 'files/'.$filelabel;
 
-        $diskType = 's3';
-        if (config('app.env') != 'production') {
-            $diskType = 'public';
-        }
+        $diskType = diskType();
         Storage::disk($diskType)->put($path, file_get_contents($file));
 
         $imagine = new Imagine;
