@@ -88,7 +88,7 @@
                                        accept="image/*"
                                        id="image">
                                 <div class="w-100">
-                                    <img id="preview" alt="Image Preview" class="mt-2 d-none" style="max-height: 300px;">>
+                                    <img id="preview" alt="Image Preview" class="mt-2 d-none" style="max-height: 300px;">
                                 </div>
                                 <div id="dimensions"></div>
                             </div>

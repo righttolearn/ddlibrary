@@ -54,4 +54,5 @@
             </div>
         </form>
     </div>
+    @include('resources.partials.image_manager_modal')
 @endsection

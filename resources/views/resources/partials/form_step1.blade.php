@@ -5,7 +5,7 @@
                id="title"
                name="title"
                type="text"
-               value="{{ @$resource['title'] }}"
+               value="{{ old('title', $resource['title'] ?? '') }}"
                required autofocus placeholder="@lang('Title')">
         @error('title')
             <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
@@ -82,7 +82,7 @@
                 <i class="ph-light ph-image"></i> @lang('Select or upload your image')
             </button>
             <input type="hidden" value="{{ old('resource_file_id', $resource->resourceFile->id ?? '') }}"
-                   id="resource_file_id" name="resource_file_id" required>
+                   id="resource_file_id" name="resource_file_id">
         </div>
         @error('image')
             <span class="text-danger small"><strong>{{ $message }}</strong></span>
@@ -106,4 +106,3 @@
         @enderror
     </div>
 </div>
-@include('resources.partials.image_manager_modal')
