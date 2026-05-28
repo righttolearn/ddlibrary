@@ -31,7 +31,7 @@
                                     @if(Lang::locale() != 'en')
                                         <i class="ph-light ph-info"
                                            data-bs-toggle="tooltip"
-                                           title="{{ en('Subject Areas') }}">
+                                           title="Subject Areas">
                                         </i>
                                     @endif
                                 </label>

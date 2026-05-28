@@ -283,18 +283,51 @@ class ResourceController extends Controller
         return view('resources.resources_view', $viewData);
     }
 
-    public function createStepOne(Request $request): Factory|View|Application
+    public function createStepOne(Request $request): View
     {
         $resource = $request->session()->get('new_resource_step_1');
         $myResources = new Resource;
-        $creativeCommons = $myResources->resourceAttributesList('taxonomy_term_data', 10, config('app.locale'), [168, 535]); // taxonomy_term_data.tnid [168=Unknown , 535=CC BY / CC BY-SA]
+
+        // Taxonomy lists
+        $creativeCommons = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::CreativeCommons->value, config('app.locale'), [168, 535]);
         $subjects = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::ResourceSubject);
-        $subjects = $subjects->map(function($item) use ($subjects) {
+        $levels = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::ResourceLevels);
+        $learningResourceTypes = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::ResourceType);
+        $educationalUse = $myResources->resourceAttributesList('taxonomy_term_data', TaxonomyVocabularyEnum::EducationalUse);
+
+        // Build hierarchy
+        $subjects = $subjects->map(function ($item) use ($subjects) {
             $item->children = $subjects->where('parent', $item->id);
             return $item;
         });
 
-        return view('resources.resource_form', compact('resource', 'creativeCommons', 'subjects'));
+        $levels = $levels->map(function ($item) use ($levels) {
+            $item->children = $levels->where('parent', $item->id);
+            return $item;
+        });
+
+        // Create defaults
+        $edit = false;
+        $dbRecords = null;
+        $resourceSubjectAreas = null;
+        $resourceLearningResourceTypes = null;
+        $editEducationalUse = null;
+        $resourceLevels = null;
+
+        return view('resources.resource_form', compact(
+            'resource',
+            'creativeCommons',
+            'subjects',
+            'levels',
+            'learningResourceTypes',
+            'educationalUse',
+            'resourceSubjectAreas',
+            'resourceLearningResourceTypes',
+            'editEducationalUse',
+            'resourceLevels',
+            'edit',
+            'dbRecords'
+        ));
     }
 
     public function postStepOne(ResourceStepOneRequest $request): Redirector|Application|RedirectResponse
