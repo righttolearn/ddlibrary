@@ -1,4 +1,4 @@
-<div class="offcanvas {{ LaravelLocalization::getCurrentLocaleDirection() == 'rtl' ? 'offcanvas-end' : 'offcanvas-start' }}" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="filterPanelLabel">@lang('Filter')</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="@lang('Close')"></button>

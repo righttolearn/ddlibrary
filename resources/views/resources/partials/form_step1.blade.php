@@ -93,7 +93,7 @@
         <div id="selected-image-preview" class="{{ $resource?->resourceFile?->name ? '' : 'd-none' }}">
             <img id="preview-image"
                  src="{{ $resource?->resourceFile ? getResourceImage($resource->resourceFile->name, true) : '' }}"
-                 class="img-fluid rounded" style="max-height: 250px;" alt="@lang('Selected Image')">
+                 class="img-fluid rounded" alt="@lang('Selected Image')">
         </div>
     </div>
 
