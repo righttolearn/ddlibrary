@@ -101,6 +101,9 @@
                 </div>
             @endif
         @endforeach
+        <a href="#" class="small text-decoration-none" style="display:none;" data-action="cc-reset" data-target="creative_commons">
+            @lang('Clear selection')
+        </a>
         <small class="form-text text-muted mt-2 d-block">
             @lang('Unsure of which option to select?')
             <a href="{{ URL::to('/page/2252') }}" title="@lang('Copyright help')">@lang('Click here')</a>
@@ -125,6 +128,9 @@
                 </div>
             @endif
         @endforeach
+        <a href="#" class="small text-decoration-none" style="display:none;" data-action="cc-reset" data-target="creative_commons_other">
+            @lang('Clear selection')
+        </a>
     </div>
 
     @if (isAdmin() || isLibraryManager())

@@ -147,4 +147,37 @@ document.addEventListener('change', (e) => {
     }
 });
 
+document.addEventListener('change', (e) => {
+    if (e.target.closest('[data-action="cc-select"]')) {
+        document.querySelectorAll('[name="creative_commons_other"]')
+            .forEach(el => el.disabled = true);
+        const btn = document.querySelector('[data-action="cc-reset"][data-target="creative_commons"]');
+        if (btn) btn.style.display = 'inline';
+    }
+    if (e.target.closest('[data-action="cc-other-select"]')) {
+        document.querySelectorAll('[name="creative_commons"]')
+            .forEach(el => el.disabled = true);
+        const btn = document.querySelector('[data-action="cc-reset"][data-target="creative_commons_other"]');
+        if (btn) btn.style.display = 'inline';
+    }
+});
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="cc-reset"]');
+    if (!btn) return;
+
+    const target = btn.dataset.target;
+    const opposite = target === 'creative_commons' ? 'creative_commons_other' : 'creative_commons';
+
+    document.querySelectorAll(`[name="${target}"]`).forEach(el => {
+        el.checked = false;
+        el.disabled = false;
+    });
+    document.querySelectorAll(`[name="${opposite}"]`)
+        .forEach(el => el.disabled = false);
+
+    document.querySelectorAll('[data-action="cc-reset"]')
+        .forEach(el => el.style.display = 'none');
+});
+
 window.toggleTranslation = toggleTranslation;

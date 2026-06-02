@@ -259,10 +259,9 @@
                         @endforeach
                     </div>
                 </div>
-
-                <div class="card mt-3">
-                    <div class="card-body p-3">
-                        @if (isAdmin() || isLibraryManager())
+                @if (isAdmin() || isLibraryManager())
+                    <div class="card mt-3">
+                        <div class="card-body p-3">
                             @if ($resource->user)
                                 <p>@lang('Added by'):
                                     <a href="{{ route('user-view', $resource->user->id) }}">
@@ -303,9 +302,9 @@
                                     </div>
                                 </div>
                             @endforeach
-                        @endif
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
             @include('resources.partials.comments')
         </div>
