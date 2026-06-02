@@ -1,6 +1,6 @@
 <div class="row">
     @php
-        $cc_common = $resources?->creativeCommons?->first()?->name ?? '';
+        $cc_common = $resource?->creativeCommons?->first()?->name ?? '';
     @endphp
 
     <div class="col-12 mb-4">
@@ -10,7 +10,7 @@
                 <div class="form-check {{ Lang::locale() != 'en' ? 'form-check-reverse' : '' }}">
                     <input class="form-check-input" type="radio" value="translation"
                            name="resource_rights" id="translation_rights"
-                            {{ $resources?->TranslationRights ? 'checked' : '' }}>
+                            {{ $resource?->TranslationRights ? 'checked' : '' }}>
                     <label class="form-check-label" for="translation_rights">
                         <strong>@lang('Translation Rights')</strong><br>
                         @lang('I am providing a new translation. I have selected the license that appears on the original resource.')
@@ -42,7 +42,7 @@
                 <div class="form-check {{ Lang::locale() != 'en' ? 'form-check-reverse' : '' }}">
                     <input class="form-check-input" type="radio" value="author"
                            name="resource_rights" id="iam_author"
-                            {{ $resources?->iamAuthors ? 'checked' : '' }}>
+                            {{ $resource?->iamAuthors ? 'checked' : '' }}>
                     <label class="form-check-label" for="iam_author">
                         <strong>@lang('I am the author')</strong><br>
                         @lang('I am the author and I am submitting my resource to DDL. I am selecting a creative commons license for my resource below.')
