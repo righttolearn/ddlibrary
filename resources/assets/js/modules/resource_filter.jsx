@@ -1,98 +1,104 @@
-function formatOptionLabel(label) {
-  const name = String(label || '').toLowerCase()
+import TomSelect from 'tom-select';
+import 'tom-select/dist/css/tom-select.bootstrap5.css';
+import axios from 'axios';
 
-  return name.charAt(0).toUpperCase() + name.slice(1)
-}
+if (document.getElementById('filterPanel')) {
 
-function appendOptions(selectElement, data) {
-  if (!selectElement || !data) return
-  selectElement.append(new Option("", ""));
-  for (const optionName in data) {
-    const optionId = data[optionName]
-    selectElement.append(new Option(formatOptionLabel(optionName), optionId))
+  document.addEventListener('DOMContentLoaded', () => {
+    ['selectSubjectAreaParent', 'selectSubjectAreaChild', 'selectResourceType', 'selectLiteracyLevel'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      new TomSelect(el, {
+        plugins: ['remove_button'],
+        placeholder: '...',
+      });
+    });
+  });
+
+  function formatOptionLabel(label) {
+    const name = String(label || '').toLowerCase();
+    return name.charAt(0).toUpperCase() + name.slice(1);
   }
-}
 
-function toggleLoading(isLoading) {
-  const cfg = window.resourceFilterConfig
-  const btn = document.querySelector('input[type="submit"]')
-  const container = document.querySelector('#advanced-filter-container')
-
-  if (!btn || !container) return
-
-  if (isLoading) {
-    btn.disabled = true
-    btn.value = cfg.loadingText || btn.value
-    container.style.opacity = '0.6'
-  } else {
-    btn.disabled = false
-    btn.value = cfg.applyText || btn.value
-    container.style.opacity = '1'
+  function appendOptions(selectId, data) {
+    const el = document.getElementById(selectId);
+    if (!el || !data) return;
+    const ts = el.tomselect;
+    if (!ts) return;
+    ts.clearOptions();
+    ts.clearCache();
+    Object.entries(data).forEach(([name, id]) => {
+      ts.addOption({ value: String(id), text: formatOptionLabel(name) });
+    });
+    ts.refreshOptions(false);
   }
-}
 
-function getFilterOptions() {
-  const cfg = window.resourceFilterConfig
-  const language = document.querySelector('#language').value
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+  function toggleLoading(isLoading) {
+    const cfg = window.resourceFilterConfig;
+    const btn = document.querySelector('#filterPanel button[type="submit"]');
+    const container = document.getElementById('filterPanel');
 
-  if (!language || !csrfToken) return
+    if (!btn || !container) return;
 
-  toggleLoading(true)
-  $.ajax({
-    type: 'POST',
-    url: cfg.updateOptionsUrl,
-    dataType: 'json',
-    data: { _token: csrfToken, language: language },
-    success: function (res) {
-      const subjectAreaParent = document.querySelector('#selectSubjectAreaParent');
-      const resourceType = document.querySelector('#selectResourceType');
-      const literacyLevel = document.querySelector('#selectLiteracyLevel');
-      
-      document.querySelector('#selectSubjectAreaChild').innerHTML ='';
-      subjectAreaParent.innerHTML = '';
-      resourceType.innerHTML = '';
-      literacyLevel.innerHTML = '';
+    if (isLoading) {
+      btn.disabled = true;
+      btn.textContent = cfg.loadingText || btn.textContent;
+      container.classList.add('opacity-50');
+    } else {
+      btn.disabled = false;
+      btn.textContent = cfg.applyText || btn.textContent;
+      container.classList.remove('opacity-50');
+    }
+  }
 
-      appendOptions(subjectAreaParent, res.subjectAreas)
-      appendOptions(resourceType, res.resourceTypes)
-      appendOptions(literacyLevel, res.literacyLevels)
-    },
-    error: function () {
-      alert(cfg.failedMsg || 'Failed to load filter options. Please try again.')
-    },
-    complete: function () {
-      toggleLoading(false)
-    },
-  })
-}
+  async function getFilterOptions() {
+    const cfg = window.resourceFilterConfig;
+    const language = document.getElementById('language')?.value;
+    if (!language) return;
 
-function getSubjectChildren() {
-  const language = document.querySelector('#language').value;
-  let selected_values = selectSubjectAreaParent.selectedOptions;
-  
-  selected_values = Array.from(selected_values).map(({ value }) => value);
-  $("#selectSubjectAreaChild option").remove();
+    toggleLoading(true);
 
-  $.ajax({
-    type: 'GET',
-    url: `filter/subject?IDs=${selected_values}&language=${language}`,
-    success: function (res) {
+    try {
+      const response = await axios.post(cfg.updateOptionsUrl, { language });
 
-      let option = document.createElement('option');
-      option.value = "";
-      selectSubjectAreaChild.append(option)
-      if (res) {
-        $.each(res, function(name, id) {
-            let option = document.createElement('option');
-            option.innerHTML = name;
-            option.value = id;
-            selectSubjectAreaChild.append(option)
-        });
+      appendOptions('selectSubjectAreaParent', response.data.subjectAreas);
+      appendOptions('selectResourceType', response.data.resourceTypes);
+      appendOptions('selectLiteracyLevel', response.data.literacyLevels);
+
+      const childEl = document.getElementById('selectSubjectAreaChild');
+      if (childEl?.tomselect) {
+        childEl.tomselect.clearOptions();
+        childEl.tomselect.clearCache();
+        childEl.tomselect.refreshOptions(false);
       }
-    },
-  })
-}
+    } catch (error) {
+      const cfg = window.resourceFilterConfig;
+      alert(cfg.failedMsg || 'Failed to load filter options. Please try again.');
+    } finally {
+      toggleLoading(false);
+    }
+  }
 
-window.getFilterOptions = getFilterOptions
-window.getSubjectChildren = getSubjectChildren
+  async function getSubjectChildren() {
+    const language = document.getElementById('language')?.value;
+    const parentSelect = document.getElementById('selectSubjectAreaParent');
+    if (!parentSelect) return;
+
+    const selectedIds = Array.from(parentSelect.tomselect?.items ?? []).join(',');
+    if (!selectedIds) return;
+
+    try {
+      const response = await axios.get(`${baseUrl}/resources/filter/subject`, {
+        params: { IDs: selectedIds, language }
+      });
+      appendOptions('selectSubjectAreaChild', response.data);
+    } catch (error) {
+      console.error('Error loading subject children:', error);
+    }
+  }
+
+  document.addEventListener('change', (e) => {
+    if (e.target.closest('#language')) getFilterOptions();
+    if (e.target.closest('#selectSubjectAreaParent')) getSubjectChildren();
+  });
+}
