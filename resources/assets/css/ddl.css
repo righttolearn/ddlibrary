@@ -3,10 +3,6 @@ main {
     min-height: 76vh;
 }
 
-#news-highlight {
-    background-color: #7777776e;
-}
-
 #advanced-filter-container {
     background-color: #FFFFFF;
 }
@@ -37,109 +33,6 @@ main {
 
 .content-body {
     width: 100%;
-}
-
-.form-item {
-    max-width: 100%;
-    margin-bottom: 15px;
-}
-
-.form-item label:first-child {
-    display: block;
-    margin-bottom: 4px;
-}
-
-.form-item label#remember-me {
-    display: inline;
-    margin-bottom: 0;
-    font-size: 0.9rem;
-    vertical-align: bottom;
-}
-
-.container #login-row #login-column #login-box {
-    margin-top: 120px;
-    max-width: 600px;
-    height: 380px;
-    overflow: auto;
-    border-radius: 3px;
-    border: 1px solid #dfdfdf;
-    background-color: #FFFFFF;
-}
-
-.container #login-row #login-column #login-box #login-form {
-    padding: 20px;
-}
-
-.oauth-icon-separator {
-    content: '';
-    display: inline-block;
-    background: #fff;
-    margin: 0 4px;
-    height: 20px;
-    width: 1px;
-    vertical-align: top;
-}
-
-select.form-control:not([size]):not([multiple]) {
-    height: calc(2.19rem + 2px)
-}
-
-select.form-control:focus::-ms-value {
-    color: #495057;
-    background-color: #fff
-}
-
-.form-control-file,
-.form-control-range {
-    display: block;
-    width: 100%
-}
-
-.ddl-forms select {
-    width: 22rem;
-}
-
-.ddl-forms .description {
-    padding-top: 4px;
-    padding-left: 4px;
-    line-height: 20px;
-    font-size: 0.84rem;
-    color: #777;
-}
-
-.personal-information {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
-}
-
-.register-form-item  {
-    flex:1 1 50%; 
-    box-sizing: border-box;
-    padding:0px 20px;
-}
-
-@media (max-width: 768px) {
-    .register-form-item  {
-      flex-basis: 100%;
-    }
-    .ddl-forms {
-        padding:30px 15px !important;
-    }
-}
-
-.register-form input:not(.submit-button),
-.register-form select {
-    width: 340px;
-}
-
-.btnlink {
-    padding-top: 15px;
-}
-
-.btn-div {
-    margin-top: 15px;
-    font-size: 0.84rem;
 }
 
 .general-content {
@@ -212,10 +105,6 @@ select.form-control:focus::-ms-value {
 
 .translate div span {
     padding: 1em;
-}
-
-viewer-pdf-toolbar {
-    display: none!important;
 }
 
 table {

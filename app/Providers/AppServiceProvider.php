@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->isProduction()) {
+            \URL::forceScheme('https');
+        }
         Schema::defaultStringLength(191);
         Paginator::useBootstrap();
         RateLimiter::for('api', function (Request $request) {

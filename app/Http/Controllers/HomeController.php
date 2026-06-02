@@ -44,17 +44,15 @@ class HomeController extends Controller
         // $surveys = Survey::find(1);
         // $surveyQuestions = SurveyQuestion::where('survey_id', 1)->first();
         // $surveyQuestionOptions = SurveyQuestionOption::where('question_id', 1)->get();
-        $howToVideoId = match($appLocale) {
+        $howToVideoId = match(config('app.locale')) {
             'en' => '-PgQmUX2vbs',
             'ps' => 'EhoGbreiCjo',
             default => '-JM5lzeDWrE',
         };
 
         return view('home', compact(
-            'latestNews',
             'subjectAreas',
             'featured',
-            'latestResources',
             'howToVideoId'
         ));
     }
