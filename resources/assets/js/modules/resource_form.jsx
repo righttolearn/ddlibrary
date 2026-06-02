@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/autocomplete';
-import './image_manager.jsx';
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.bootstrap5.css';
 
@@ -135,6 +134,17 @@ document.addEventListener('click', (e) => {
     const link = e.target.closest('[data-action="confirm-delete"]');
     if (!link) return;
     if (!confirm(link.dataset.confirm)) e.preventDefault();
+});
+
+document.addEventListener('change', (e) => {
+    if (e.target.closest('[data-action="cc-select"]')) {
+        document.querySelectorAll('[name="creative_commons_other"]')
+            .forEach(el => el.disabled = true);
+    }
+    if (e.target.closest('[data-action="cc-other-select"]')) {
+        document.querySelectorAll('[name="creative_commons"]')
+            .forEach(el => el.disabled = true);
+    }
 });
 
 window.toggleTranslation = toggleTranslation;
