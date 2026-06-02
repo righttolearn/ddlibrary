@@ -318,6 +318,7 @@
 @endif
 
 @push('scripts')
+    @vite('resources/assets/js/modules/resource_view.jsx')
     @if ($ePub)
         @vite('resources/assets/js/epub.jsx')
     @endif

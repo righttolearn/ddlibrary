@@ -119,7 +119,7 @@
 <!-- /.container-fluid-->
 <!-- /.content-wrapper-->
 @push('scripts')
-    @vite('resources/assets/js/ddl.jsx')
+    @vite('resources/assets/js/app.jsx')
     <script>
         $(document).ready(function(){
             $('#country').trigger('change');

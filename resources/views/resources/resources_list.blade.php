@@ -70,3 +70,17 @@
         </div>
     </div>
 @endsection
+@section('offcanvas')
+    @include('resources.partials.filter_offcanvas')
+@endsection
+@push('scripts')
+    @vite('resources/assets/js/modules/resource_filter.jsx')
+    <script>
+        window.resourceFilterConfig = {
+            updateOptionsUrl: "{{ route('filter.update-options') }}",
+            failedMsg: "@lang('Failed to load filter options. Please try again.')",
+            loadingText: "@lang('Loading, please wait')",
+            applyText: "@lang('Apply filters')",
+        };
+    </script>
+@endpush

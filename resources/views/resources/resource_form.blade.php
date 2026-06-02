@@ -58,3 +58,9 @@
     </div>
     @include('resources.partials.image_manager_modal')
 @endsection
+@push('scripts')
+    @vite([
+        'resources/assets/js/modules/resource_form.jsx',
+        'resources/assets/js/modules/image_manager.jsx',
+    ])
+@endpush

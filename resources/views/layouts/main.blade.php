@@ -20,7 +20,7 @@
 
     <link rel="shortcut icon" href="{{ getFile('files/favicon.ico', now()->addMinutes(5)) }}">
 
-    @vite(['resources/assets/sass/app.scss', 'resources/assets/js/ddl.jsx'])
+    @vite(['resources/assets/sass/app.scss', 'resources/assets/js/app.jsx'])
 
     <script>
         let baseUrl = "{{ url('/') }}";
@@ -115,6 +115,7 @@
             @endif
 
         </main>
+        @yield('offcanvas')
         @include('layouts.footer')
     </div>
     @stack('scripts')

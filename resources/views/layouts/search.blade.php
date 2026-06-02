@@ -9,9 +9,9 @@
                 <button class="btn btn-primary btn-lg" type="submit">
                     <i class="fas fa-search"></i>
                 </button>
-                <a href="{{ route('resourceFilter') }}" class="btn btn-primary {{ (Lang::locale() != 'en') ? 'me-1' : 'ms-1' }} btn-lg" title="@lang('Filter')">
-                    <i class="fas fa-sliders"></i>
-                </a>
+                <button class="btn btn-primary ms-1 d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel" title="@lang('Filter')">
+                    <i class="ph-fill ph-sliders filter-icon"></i>
+                </button>
             </div>
         </div>
     </form>
