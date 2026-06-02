@@ -73,3 +73,7 @@ DDL Glossary
         </div>
     </div>
 @endsection
+@push('scripts')
+    @vite('resources/assets/js/modules/glossary.jsx')
+@endpush
+
