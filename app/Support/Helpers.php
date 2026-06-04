@@ -662,11 +662,10 @@ if (! function_exists('watermark_pdf')) {
     if (! function_exists('getFile')) {
         function getFile($file): string
         {
-            if (config('app.env') != 'production') {
-                return Storage::disk('public')->url($file);
-            } else {
+            if (config('services.cloudfront.key_pair_id')) {
                 return app(CloudFrontService::class)->signedUrl($file);
             }
+            return Storage::url($file);
         }
     }
 
