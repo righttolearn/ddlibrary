@@ -67,9 +67,11 @@ main {
 
 /* StoryWeaver */
 .storyweaver-logo {
-    width: 25px;
-    height: 26px;
+    border-radius: 5px;
     vertical-align: middle;
+    width: 18px;
+    height: 18px;
+    background-color: #000000;
 }
 
 .storyweaver-confirm {
