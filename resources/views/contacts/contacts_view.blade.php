@@ -28,7 +28,7 @@
                                 <label for="name" class="form-label">@lang('Full Name') <span class="text-danger">*</span></label>
                                 <input class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
                                        id="name" name="name" type="text"
-                                       value="{{ old('name', $fullname) }}" required autofocus>
+                                       value="{{ old('name', $fullname ?? '') }}" required autofocus>
                                 @error('name')
                                     <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                 @enderror
@@ -38,7 +38,7 @@
                                 <label for="email" class="form-label">@lang('Email') <span class="text-danger">*</span></label>
                                 <input class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
                                        id="email" name="email" type="email"
-                                       value="{{ old('email', $email) }}" required>
+                                       value="{{ old('email', $email ?? '') }}" required>
                                 @error('email')
                                     <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                 @enderror

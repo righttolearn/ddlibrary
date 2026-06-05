@@ -78,9 +78,6 @@ class ContactController extends Controller
             }
         }
 
-        // setting the search session empty
-        DDLClearSession();
-
         return view('contacts.contacts_view');
     }
 
