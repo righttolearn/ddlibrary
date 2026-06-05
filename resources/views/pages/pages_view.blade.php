@@ -6,7 +6,7 @@
 {{ trim(strip_tags(fixImage($page->summary, $page->id, true))) }}
 @endsection
 @section('page_image')
-{{ asset('storage/files/logo-dd.png') }}
+{{ getFile('public/img/logo-ddl-new.png') }}
 @endsection
 @section('content')
 <div class="container my-3" style="background-color: #ffffff;">

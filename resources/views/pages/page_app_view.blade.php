@@ -6,7 +6,7 @@
 {{ trim(strip_tags(fixImage($page->summary, $page->id))) }}kk
 @endsection
 @section('page_image')
-{{ asset('storage/files/logo-dd.png') }}
+{{ getFile('public/img/logo-ddl-new.png') }}
 @endsection
 @section('content')
 <section dir="@if ($page->language!='en'){{'rtl'}}@else{{'ltr'}}@endif" class="general-content">

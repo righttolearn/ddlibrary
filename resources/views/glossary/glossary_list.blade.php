@@ -6,7 +6,7 @@ DDL Glossary
 DDL Glossary
 @endsection
 @section('page_image')
-{{ asset('storage/files/logo-dd.png') }}
+{{ getFile('public/img/logo-ddl-new.png') }}
 @endsection
 @section('content')
     <div class="container-fluid">

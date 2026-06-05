@@ -47,10 +47,10 @@
             <div class="d-flex flex-wrap justify-content-start justify-content-lg-end align-items-center gap-3">
                 <div class="app-badges d-flex flex-row gap-2">
                     <a href="https://play.google.com/store/apps/details?id=com.ddacademi.library" target="_blank">
-                        <img src="{{ (Lang::locale() != 'en') ? getFile('files/google-play-badge-fa.png') : getFile('files/google-play-badge-en.png') }}" alt="@lang('Google Play')" class="app-badge">
+                        <img src="{{ (Lang::locale() != 'en') ? getFile('public/img/google-play-badge-fa.png') : getFile('public/img/google-play-badge-en.png') }}" alt="@lang('Google Play')" class="app-badge">
                     </a>
                     <a href="https://apps.apple.com/us/app/darakht-e-danesh-library/id6745165605" target="_blank">
-                        <img src="{{ getFile('files/app-store-badge-en.svg') }}" alt="@lang('App Store')" class="app-badge">
+                        <img src="{{ getFile('public/img/app-store-badge-en.svg') }}" alt="@lang('App Store')" class="app-badge">
                     </a>
                 </div>
                 <div class="social-icons d-flex align-items-center gap-3">

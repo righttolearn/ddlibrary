@@ -6,7 +6,7 @@
     @lang('The Darakht-e Danesh Online Library for Educators is a repository of open educational resources for teachers, teacher trainers, school administrators, literacy workers and others involved in furthering education in Afghanistan.')
 @endsection
 @section('page_image')
-    {{ asset('storage/files/logo-dd.png') }}
+    {{ getFile('public/img/logo-ddl-new.png') }}
 @endsection
 @section('search')
     @include('layouts.search')
@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="card border-0">
-                        <img src="{{ getFile('Girls_studying.png') }}"
+                        <img src="{{ getFile('public/img/Girls_studying.png') }}"
                              class="card-img-top rounded-0 w-100 object-fit-cover"
                              alt="Girls studying"
                              style="height: 300px;"

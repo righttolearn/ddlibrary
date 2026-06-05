@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg px-2 navbar-light border-bottom">
     <a href="{{ URL::to('/') }}" class="navbar-brand" title="Darakht-e Danesh Library logo">
-        <img src="{{ getFile('logo-ddl-new.png') }}" alt="DD Library logo">
+        <img src="{{ getFile('public/img/logo-ddl-new.png') }}" alt="DD Library logo">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
