@@ -2,6 +2,11 @@ import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.bootstrap5.css';
 import axios from 'axios';
 
+if (window.location.hash === '#filterPanel') {
+  const offcanvas = document.getElementById('filterPanel');
+  if (offcanvas) bootstrap.Offcanvas.getOrCreateInstance(offcanvas).show();
+}
+
 if (document.getElementById('filterPanel')) {
 
   document.addEventListener('DOMContentLoaded', () => {

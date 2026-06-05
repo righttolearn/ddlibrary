@@ -9,9 +9,21 @@
                 <button class="btn btn-primary btn-lg" type="submit">
                     <i class="fas fa-search"></i>
                 </button>
-                <button class="btn btn-primary ms-1 d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel" title="@lang('Filter')">
-                    <i class="ph-fill ph-sliders filter-icon"></i>
-                </button>
+                @if(request()->routeIs('resourceList'))
+                    <button class="btn btn-primary ms-1 d-flex align-items-center"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#filterPanel"
+                            title="@lang('Filter')">
+                        <i class="ph-fill ph-sliders filter-icon"></i>
+                    </button>
+                @else
+                    <a href="{{ route('resourceList') }}#filterPanel"
+                       class="btn btn-primary ms-1 d-flex align-items-center"
+                       title="@lang('Filter')">
+                        <i class="ph-fill ph-sliders filter-icon"></i>
+                    </a>
+                @endif
             </div>
         </div>
     </form>
