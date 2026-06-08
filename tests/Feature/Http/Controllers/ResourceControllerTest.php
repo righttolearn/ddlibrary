@@ -2,28 +2,23 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Enums\TaxonomyVocabularyEnum;
 use App\Models\Resource;
-use App\Models\ResourceAttachment;
 use App\Models\ResourceAuthor;
 use App\Models\ResourceComment;
 use App\Models\ResourceCopyrightHolder;
-use App\Models\ResourceEducationalResource;
 use App\Models\ResourceEducationalUse;
 use App\Models\ResourceFavorite;
 use App\Models\ResourceFile;
 use App\Models\ResourceFlag;
 use App\Models\ResourceIamAuthor;
-use App\Models\ResourceKeyword;
 use App\Models\ResourceLearningResourceType;
 use App\Models\ResourceLevel;
 use App\Models\ResourcePublisher;
-use App\Models\ResourceSharePermission;
 use App\Models\ResourceSubjectArea;
-use App\Models\ResourceTranslationRight;
 use App\Models\TaxonomyTerm;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Session;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -814,12 +809,12 @@ class ResourceControllerTest extends TestCase
         ]);
 
         // Create related data
-        $subjectArea = TaxonomyTerm::where('vid', 8)->first();
-        $learningType = TaxonomyTerm::where('vid', 7)->first();
-        $educationalUse = TaxonomyTerm::where('vid', 25)->first();
-        $level = TaxonomyTerm::where('vid', 13)->first();
-        $author = TaxonomyTerm::where('vid', 24)->first();
-        $publisher = TaxonomyTerm::where('vid', 9)->first();
+        $author = TaxonomyTerm::factory()->create(['vid' => 24, 'language' => 'en']);
+        $publisher = TaxonomyTerm::factory()->create(['vid' => 9, 'language' => 'en']);
+        $subjectArea = TaxonomyTerm::factory()->create(['vid' => 8, 'language' => 'en']);
+        $learningType = TaxonomyTerm::factory()->create(['vid' => 7, 'language' => 'en']);
+        $educationalUse = TaxonomyTerm::factory()->create(['vid' => 25, 'language' => 'en']);
+        $level = TaxonomyTerm::factory()->create(['vid' => 13, 'language' => 'en']);
 
         // Attach relationships
         ResourceSubjectArea::create(['resource_id' => $resource->id, 'tid' => $subjectArea->id]);
