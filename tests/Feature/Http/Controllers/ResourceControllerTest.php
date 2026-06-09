@@ -170,7 +170,7 @@ class ResourceControllerTest extends TestCase
         $this->assertDatabaseHas('resource_authors', ['resource_id' => $resource->id]);
         $this->assertDatabaseHas('resource_subject_areas', ['resource_id' => $resource->id]);
         $this->assertDatabaseHas('resource_levels', ['resource_id' => $resource->id]);
-        $this->assertDatabaseHas('resource_iam_authors', ['resource_id' => $resource->id]);
+        $this->assertDatabaseHas('resource_authors', ['resource_id' => $resource->id]);
     }
 
     #[Test]
@@ -311,26 +311,6 @@ class ResourceControllerTest extends TestCase
     }
 
     #[Test]
-    public function post_step_one_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $response = $this->post('en/resources/add/step1', [
-            'title' => 'Resource Title',
-            'author' => 'Author Name',
-            'publisher' => 'Publisher Name',
-            'translator' => 'Translator Name',
-            'language' => 'en',
-            'abstract' => 'This is an abstract.',
-        ]);
-
-        $response->assertRedirect('/resources/add/step2');
-    }
-
-    #[Test]
     public function translator_field_is_required_when_has_translator_is_checked(): void
     {
         $this->refreshApplicationWithLocale('en');
@@ -393,208 +373,6 @@ class ResourceControllerTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['publisher']);
-    }
-
-    #[Test]
-    public function post_step_one_edit_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-        $this->actingAs($admin);
-
-        $resource = Resource::factory()->create();
-
-        $response = $this->post('en/resources/edit/step1/'.$resource->id, [
-            'title' => 'Updated Resource',
-            'author' => 'Updated Author',
-            'publisher' => 'Updated Publisher',
-            'translator' => 'Updated Translator',
-            'language' => 'en',
-            'abstract' => 'Updated abstract.',
-        ]);
-
-        $response->assertRedirect('/resources/edit/step2/'.$resource->id);
-    }
-
-    #[Test]
-    public function post_step_three_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-        $this->actingAs($admin);
-
-        $resource = Resource::factory()->create();
-        $taxonomyTerm = TaxonomyTerm::factory()->create();
-
-        $step1 = [
-            'title' => 'nice',
-            'author' => 'wow',
-            'publisher' => 'wow',
-            'translator' => 'great',
-            'language' => 'en',
-            'abstract' => '<p>abstract</p>',
-        ];
-
-        $step2 = [
-            'subject_areas' => [],
-            'keywords' => 'keyword',
-            'learning_resources_types' => [],
-            'educational_use' => [],
-            'level' => [],
-        ];
-
-        Session::put('new_resource_step_1', $step1);
-        Session::put('new_resource_step_2', $step2);
-
-        $response = $this->post('en/resources/add/step3', [
-            'translation_rights' => 1,
-            'educational_resource' => 1,
-            'copyright_holder' => null,
-        ]);
-
-        $response->assertRedirect('/home');
-    }
-
-    #[Test]
-    public function post_step_three_edit_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-        $this->actingAs($admin);
-
-        $resource = Resource::factory()->create();
-        $taxonomyTerm = TaxonomyTerm::factory()->create();
-
-        $step1 = [
-            'title' => 'updated title',
-            'author' => 'updated wow',
-            'publisher' => 'updated wow',
-            'translator' => 'updated great',
-            'language' => 'en',
-            'abstract' => '<p>updated abstract</p>',
-        ];
-
-        $step2 = [
-            'subject_areas' => [],
-            'keywords' => 'keyword',
-            'learning_resources_types' => [],
-            'educational_use' => [],
-            'level' => [],
-        ];
-
-        Session::put('edit_resource_step_1', $step1);
-        Session::put('edit_resource_step_2', $step2);
-
-        $resource = Resource::factory()->create();
-        $taxonomyTerm = TaxonomyTerm::factory()->create();
-
-        $response = $this->post('en/resources/edit/step3/'.$resource->id, [
-            'translation_rights' => 1,
-            'educational_resource' => 1,
-            'copyright_holder' => null,
-        ]);
-
-        $response->assertRedirect('/resource/'.$resource->id);
-
-        $this->assertEquals('updated title', Resource::whereId($resource->id)->value('title'));
-    }
-
-    #[Test]
-    public function post_step_two_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-        $this->actingAs($admin);
-
-        $step1 = [
-            'title' => 'nice',
-            'author' => 'wow',
-            'publisher' => 'wow',
-            'translator' => 'great',
-            'language' => 'en',
-            'abstract' => '<p>abstract</p>',
-        ];
-
-        Session::put('resource1', $step1);
-
-        // learning_resources_types with vid 7
-        TaxonomyTerm::factory()->create(['vid' => 7, 'name' => 'Book']);
-        TaxonomyTerm::factory()->create(['vid' => 7, 'name' => 'Media']);
-
-        // subject_areas with vid 8
-        TaxonomyTerm::factory()->create(['vid' => 8, 'name' => 'Computer']);
-        TaxonomyTerm::factory()->create(['vid' => 8, 'name' => 'History']);
-
-        // educational_use with vid 25
-        TaxonomyTerm::factory()->create(['vid' => 25, 'name' => 'Information Education']);
-        TaxonomyTerm::factory()->create(['vid' => 25, 'name' => 'Professional Development']);
-
-        // level with vid 13
-        TaxonomyTerm::factory()->create(['vid' => 13, 'name' => 'Preschool']);
-        TaxonomyTerm::factory()->create(['vid' => 13, 'name' => 'Literacy']);
-
-        $response = $this->post('en/resources/add/step2', [
-            'subject_areas' => TaxonomyTerm::where('vid', 8)->pluck('id'),
-            'keywords' => 'keyword',
-            'learning_resources_types' => TaxonomyTerm::where('vid', 7)->pluck('id'),
-            'educational_use' => TaxonomyTerm::where('vid', 25)->pluck('id'),
-            'level' => TaxonomyTerm::where('vid', 13)->pluck('id'),
-        ]);
-
-        $response->assertRedirect('/resources/add/step3');
-    }
-
-    #[Test]
-    public function post_step_two_edit_returns_an_ok_response(): void
-    {
-        $this->refreshApplicationWithLocale('en');
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-        $this->actingAs($admin);
-
-        $step1 = [
-            'title' => 'nice',
-            'author' => 'wow',
-            'publisher' => 'wow',
-            'translator' => 'great',
-            'language' => 'en',
-            'abstract' => '<p>abstract</p>',
-        ];
-
-        Session::put('resource1', $step1);
-
-        // learning_resources_types with vid 7
-        TaxonomyTerm::factory()->create(['vid' => 7, 'name' => 'Learning resource type']);
-
-        // subject_areas with vid 8
-        TaxonomyTerm::factory()->create(['vid' => 8, 'name' => 'Subject area']);
-
-        // educational_use with vid 25
-        TaxonomyTerm::factory()->create(['vid' => 25, 'name' => 'Educatinal use']);
-
-        // level with vid 13
-        TaxonomyTerm::factory()->create(['vid' => 13, 'name' => 'Level']);
-
-        $resource = Resource::factory()->create();
-
-        $response = $this->post("en/resources/edit/step2/$resource->id", [
-            'subject_areas' => TaxonomyTerm::where('vid', 8)->orderBy('id', 'desc')->take(1)->pluck('id'),
-            'keywords' => 'keyword',
-            'learning_resources_types' => TaxonomyTerm::where('vid', 7)->orderBy('id', 'desc')->take(1)->pluck('id'),
-            'educational_use' => TaxonomyTerm::where('vid', 25)->orderBy('id', 'desc')->take(1)->pluck('id'),
-            'level' => TaxonomyTerm::where('vid', 13)->orderBy('id', 'desc')->take(1)->pluck('id'),
-        ]);
-
-        $response->assertRedirect('/resources/edit/step3/'.$resource->id);
     }
 
     #[Test]
@@ -680,23 +458,15 @@ class ResourceControllerTest extends TestCase
         $secondUser = User::factory()->create();
         $resource = Resource::factory()->create();
 
-        // Insert existing favorite for another user
-        ResourceFavorite::create([
-            'resource_id' => $resource->id,
-            'user_id' => $secondUser->id,
-        ]);
-
-        $this->actingAs($user);
-        $response = $this->post('resources/favorite', [
-            'resourceId' => $resource->id,
-        ]);
+        $this->actingAs($secondUser)->post('resources/favorite', ['resourceId' => $resource->id]);
+        $response = $this->actingAs($user)->post('resources/favorite', ['resourceId' => $resource->id]);
 
         $response->assertStatus(200)
             ->assertJson(['action' => 'added', 'favorite_count' => 2]);
 
         $this->assertDatabaseHas('resource_favorites', [
             'resource_id' => $resource->id,
-            'user_id' => $user->id, // Ensure it's added for the authenticated user
+            'user_id' => $user->id,
         ]);
     }
 

@@ -463,7 +463,9 @@ class ResourceController extends Controller
 
         if ($favorite) {
             $favorite->delete();
-            Resource::where('id', $resourceId)->decrement('favorites_count');
+            Resource::where('id', $resourceId)
+                ->where('favorites_count', '>', 0)
+                ->decrement('favorites_count');
             $action = 'deleted';
         } else {
             ResourceFavorite::create([

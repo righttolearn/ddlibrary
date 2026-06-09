@@ -102,9 +102,12 @@ class MenuControllerTest extends TestCase
 
         $menus = Menu::factory()->count(3)->create();
 
-        $response = $this->actingAs($admin)->get(route('sort_menu'));
+        $response = $this->actingAs($admin)->post(route('sort_menu'), [
+            'data' => $menus->map(fn($menu) => ['id' => $menu->id])->toArray(),
+        ]);
 
         $response->assertOk();
+        $response->assertJson(['success' => true]);
     }
 
     #[Test]

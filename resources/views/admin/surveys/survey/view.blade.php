@@ -44,7 +44,7 @@
                     <tr>
                       <td><span class="badge badge-warning">Empty</span></td>
                       <td>{{ $properties['name'] }}</td>
-                      <td><a href="{{ URL::to('admin/survey/add/translate/'.$survey_self->tnid.'/'.$localeCode) }}" class="badge badge-primary">Add</a></td>
+                      <td><a href="{{ URL::to('admin/survey/add/translate/'.$survey_self?->tnid.'/'.$localeCode) }}" class="badge badge-primary">Add</a></td>
                     </tr>
                   @endif
                 @endforeach
