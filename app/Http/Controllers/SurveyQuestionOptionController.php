@@ -76,7 +76,7 @@ class SurveyQuestionOptionController extends Controller
     {
         $option = SurveyQuestionOption::where('id', $tnid)->first();
         $question = SurveyQuestion::where(['tnid' => $option->question_id, 'language' => $lang])->first();
-        $survey = Survey::find($question->survey_id);
+        $survey = Survey::find($question?->survey_id);
 
         return view('admin.surveys.option.add_translation', compact('tnid', 'lang', 'question', 'survey'));
     }

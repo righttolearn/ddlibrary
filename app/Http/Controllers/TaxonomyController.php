@@ -233,6 +233,19 @@ class TaxonomyController extends Controller
             return ['term' => $term];
         });
 
+        foreach ($languages as $localeCode => $language) {
+            if (!$terms->has($localeCode)) {
+                $terms[$localeCode] = [
+                    'term' => [
+                        'name' => '',
+                        'weight' => '',
+                        'id' => '',
+                        'taxonomyHierarchy' => ['parent' => 0],
+                    ]
+                ];
+            }
+        }
+
         return view('admin.taxonomy.taxonomy-vocabularies.edit', compact('parents', 'terms', 'languages', 'tnid', 'vocabulary'));
     }
 

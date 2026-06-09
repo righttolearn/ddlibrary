@@ -321,6 +321,7 @@ class TaxonomyControllerTest extends TestCase
             'weight' => 1,
         ]);
         $termEn->update(['tnid' => $termEn->id]);
+        $termEn->refresh();
 
         $termFa = TaxonomyTerm::factory()->create([
             'vid' => $vid,

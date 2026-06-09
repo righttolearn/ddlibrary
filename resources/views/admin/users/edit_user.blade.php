@@ -64,7 +64,7 @@
                                         <strong>First Name</strong>
                                     </td>
                                     <td>
-                                        <input type="text" name="first_name" class="form-control" value="{{ $user->profile->first_name }}" required>
+                                        <input type="text" name="first_name" class="form-control" value="{{ $user->profile?->first_name }}" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -72,7 +72,7 @@
                                         <strong>Last Name</strong>
                                     </td>
                                     <td>
-                                        <input type="text" name="last_name" class="form-control" value="{{ $user->profile->last_name }}" required>
+                                        <input type="text" name="last_name" class="form-control" value="{{ $user->profile?->last_name }}" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -80,9 +80,9 @@
                                     <td>
                                         <select name="gender" required>
                                             <option value=""></option>
-                                            <option value="Male" {{ ($user->profile->gender=="Male"?"selected":"") }}>Male</option>
-                                            <option value="Female" {{ ($user->profile->gender=="Female"?"selected":"") }}>Female</option>
-                                            <option value="None" {{ ($user->profile->gender=="None"?"selected":"") }}>Prefer not to say</option>
+                                            <option value="Male" {{ ($user->profile?->gender=="Male"?"selected":"") }}>Male</option>
+                                            <option value="Female" {{ ($user->profile?->gender=="Female"?"selected":"") }}>Female</option>
+                                            <option value="None" {{ ($user->profile?->gender=="None"?"selected":"") }}>Prefer not to say</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -99,7 +99,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Phone</strong></td>
-                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile->phone }}"></a></td>
+                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile->phone }}"></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Country</strong></td>

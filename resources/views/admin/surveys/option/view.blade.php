@@ -13,9 +13,9 @@
           <a href="{{ URL::to('admin/surveys') }}">Survey</a>
         </li>
         <li class="breadcrumb-item">
-          <a href="{{ URL::to('admin/survey/questions/'.$survey->id) }}">Question</a>
+          <a href="{{ URL::to('admin/survey/questions/'.$survey?->id) }}">Question</a>
         </li> 
-        <li class="breadcrumb-item active">{{$question->text}}</li>
+        <li class="breadcrumb-item active">{{$question?->text}}</li>
         <li class="breadcrumb-item active">Translations</li>
       </ol>
 
@@ -48,7 +48,7 @@
                     <tr>
                       <td><span class="badge badge-warning">Empty</span></td>
                       <td>{{ $properties['name'] }}</td>
-                      @if (\App\Models\SurveyQuestion::where(['tnid'=>$question->tnid, 'language' => $localeCode])->first())
+                      @if (\App\Models\SurveyQuestion::where(['tnid'=>$question?->tnid, 'language' => $localeCode])->first())
                         <td><a href="{{ URL::to('admin/survey/question/option/add/translate/'.$option_self->tnid.'/'.$localeCode) }}" class="badge badge-primary">Add</a></td>
                       @else
                         <td><span class="badge badge-warning">Add Question first!</span></td>
