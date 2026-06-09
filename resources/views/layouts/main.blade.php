@@ -120,7 +120,7 @@
     </div>
     @stack('scripts')
 
-    @if (Auth::check() && Auth::user()->profile->gender == null)
+    @if (Auth::check() && Auth::user()->profile?->gender == null)
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" 
         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">

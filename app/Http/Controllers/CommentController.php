@@ -24,7 +24,9 @@ class CommentController extends Controller
         if ($newStatus == 1) {
             Resource::where('id', $resourceComment->resource_id)->increment('comments_count');
         } else {
-            Resource::where('id', $resourceComment->resource_id)->decrement('comments_count');
+            Resource::where('id', $resourceComment->resource_id)
+                ->where('comments_count', '>', 0)
+                ->decrement('comments_count');
         }
 
         return back();
@@ -33,7 +35,9 @@ class CommentController extends Controller
     public function delete(ResourceComment $resourceComment): RedirectResponse
     {
         if ($resourceComment->status == 1) {
-            Resource::where('id', $resourceComment->resource_id)->decrement('comments_count');
+            Resource::where('id', $resourceComment->resource_id)
+                ->where('comments_count', '>', 0)
+                ->decrement('comments_count');
         }
         $resourceComment->delete();
 

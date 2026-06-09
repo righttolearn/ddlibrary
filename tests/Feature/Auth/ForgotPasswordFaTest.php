@@ -23,7 +23,7 @@ class ForgotPasswordFaTest extends TestCase
         $response->assertViewIs('auth.passwords.email');
 
         $response->assertSee('گذرواژه خود را تغییر بدهید');
-        $response->assertSee('آدرس ایمیل شما');
+        $response->assertSee('آدرس ایمیل');
     }
 
     #[Test]

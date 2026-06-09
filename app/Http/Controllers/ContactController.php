@@ -67,18 +67,16 @@ class ContactController extends Controller
     {
         $this->pageView($request, 'Contact us');
 
+        $email = '';
+        $fullname = '';
+
         if (Auth::check()) {
             $user = auth()->user();
-
-            if ($user->email) {
-                return view('contacts.contacts_view', [
-                    'email' => $user->email,
-                    'fullname' => $user->profile->first_name.' '.$user->profile->last_name,
-                ]);
-            }
+            $email = $user->email ?? '';
+            $fullname = trim(($user->profile?->first_name ?? '') . ' ' . ($user->profile?->last_name ?? ''));
         }
 
-        return view('contacts.contacts_view');
+        return view('contacts.contacts_view', compact('email', 'fullname'));
     }
 
     /**

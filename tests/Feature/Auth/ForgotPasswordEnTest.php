@@ -22,7 +22,7 @@ class ForgotPasswordEnTest extends TestCase
         $response->assertViewIs('auth.passwords.email');
 
         $response->assertSee('Reset your password');
-        $response->assertSee('Your email address');
+        $response->assertSee('Email');
         $response->assertSee('Send password reset link');
     }
 
