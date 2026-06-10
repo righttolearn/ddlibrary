@@ -104,8 +104,8 @@
                                 <tr>
                                     <td><strong>Country</strong></td>
                                     <td>
-                                        Country: {{ $user->profile->country }} <br/>
-                                        City: {{ $user->profile->city }} <br/>
+                                        Country: {{ $user->profile?->country }} <br/>
+                                        City: {{ $user->profile?->city }} <br/>
                                         <select name="country" id="country" onchange="javascript:populate(this,'city', {{ json_encode($provinces) }})" required>
                                             @foreach($countries AS $cn)
                                             <option value="{{ $cn->tnid }}" {{ ($user->profile?->country==$cn->tnid?"selected":"") }}>{{ $cn->name }}</option>

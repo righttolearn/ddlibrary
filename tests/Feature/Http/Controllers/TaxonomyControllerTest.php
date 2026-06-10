@@ -320,7 +320,8 @@ class TaxonomyControllerTest extends TestCase
             'language' => 'en',
             'weight' => 1,
         ]);
-        $termEn->update(['tnid' => $termEn->id]);
+        $termEn->tnid = $termEn->id;
+        $termEn->save();
         $termEn->refresh();
 
         $termFa = TaxonomyTerm::factory()->create([
