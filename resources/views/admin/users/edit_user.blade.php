@@ -99,7 +99,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Phone</strong></td>
-                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile->phone }}"></td>
+                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile?->phone }}"></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Country</strong></td>
@@ -108,7 +108,7 @@
                                         City: {{ $user->profile->city }} <br/>
                                         <select name="country" id="country" onchange="javascript:populate(this,'city', {{ json_encode($provinces) }})" required>
                                             @foreach($countries AS $cn)
-                                            <option value="{{ $cn->tnid }}" {{ ($user->profile->country==$cn->tnid?"selected":"") }}>{{ $cn->name }}</option>
+                                            <option value="{{ $cn->tnid }}" {{ ($user->profile?->country==$cn->tnid?"selected":"") }}>{{ $cn->name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -119,10 +119,10 @@
                                         <select name="city" id="city">
                                             <option value=""> - None -</option>
                                             @foreach($provinces AS $pn)
-                                            <option value="{{ $pn->tnid }}" {{ ($user->profile->city==$pn->tnid?"selected":"") }}>{{ $pn->name }}</option>
+                                            <option value="{{ $pn->tnid }}" {{ ($user->profile?->city==$pn->tnid?"selected":"") }}>{{ $pn->name }}</option>
                                             @endforeach
                                         </select>
-                                    <input type="text" class="form-control" name="city_other" id="js-text-city" size="40" value="{{ $user->profile->city }}" style="display:none;">
+                                    <input type="text" class="form-control" name="city_other" id="js-text-city" size="40" value="{{ $user->profile?->city }}" style="display:none;">
                                     </td>
                                 </tr>
                                 <tr>

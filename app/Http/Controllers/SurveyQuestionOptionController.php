@@ -15,7 +15,7 @@ class SurveyQuestionOptionController extends Controller
     {
         $lang = config('app.locale');
         $question_self = SurveyQuestion::find($id);
-        $all_questions = SurveyQuestion::where(['tnid' => $question_self->tnid, 'language' => $lang])->get();
+        $all_questions = SurveyQuestion::where(['tnid' => $question_self?->tnid, 'language' => $lang])->get();
         $all_question_ids = [];
         foreach ($all_questions as $question) {
             $all_question_ids[] = $question->id;

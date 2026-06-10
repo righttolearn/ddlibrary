@@ -27,7 +27,7 @@
                   {{ session('status') }}
               </div>
             @endif
-            @if ($survey->language == 'en')
+            @if ($survey?->language == 'en')
               <a href="{{ URL::to('admin/survey/question/add/'.$survey?->id) }}" class="btn btn-success pull-right" style="margin-bottom: 10px">
                 <span class="fa fa-plus"></span> Add New
               </a>
