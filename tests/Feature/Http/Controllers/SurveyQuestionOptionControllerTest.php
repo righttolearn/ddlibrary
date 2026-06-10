@@ -49,12 +49,12 @@ class SurveyQuestionOptionControllerTest extends TestCase
         $admin->roles()->attach(5);
 
         $survey = Survey::factory()->create();
-        $surveyQuestion = SurveyQuestion::factory()->create();
+        $surveyQuestion = SurveyQuestion::factory()->create(['survey_id' => $survey->id]);
 
         $response = $this->actingAs($admin)->get("en/admin/survey/$survey->id/question/$surveyQuestion->id/view_options");
 
         $response->assertOk();
-        $response->assertViewIs('admin.surveys.option.create');
+        $response->assertViewIs('admin.surveys.option.list');
         $response->assertViewHas('survey');
         $response->assertViewHas('question');
     }

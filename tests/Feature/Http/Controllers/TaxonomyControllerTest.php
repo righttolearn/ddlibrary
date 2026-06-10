@@ -249,7 +249,8 @@ class TaxonomyControllerTest extends TestCase
             'tnid' => 0,
             'language' => 'en',
         ]);
-        $term->update(['tnid' => $term->id]);
+        $term->tnid = $term->id;
+        $term->save();
         $term->refresh();
 
         $response = $this->actingAs($admin)->get(route('taxonomy_vocabularies.edit_or_create', ['vid' => $vid,'tnid' => $term->tnid]));
