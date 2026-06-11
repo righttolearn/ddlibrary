@@ -249,8 +249,9 @@ class TaxonomyControllerTest extends TestCase
             'tnid' => 0,
             'language' => 'en',
         ]);
-        $term->update(['tnid' => $term->id]);
-        $vid = TaxonomyVocabularyEnum::ResourceSubject->value;
+        $term->tnid = $term->id;
+        $term->save();
+        $term->refresh();
 
         $response = $this->actingAs($admin)->get(route('taxonomy_vocabularies.edit_or_create', ['vid' => $vid,'tnid' => $term->tnid]));
 
@@ -320,7 +321,9 @@ class TaxonomyControllerTest extends TestCase
             'language' => 'en',
             'weight' => 1,
         ]);
-        $termEn->update(['tnid' => $termEn->id]);
+        $termEn->tnid = $termEn->id;
+        $termEn->save();
+        $termEn->refresh();
 
         $termFa = TaxonomyTerm::factory()->create([
             'vid' => $vid,

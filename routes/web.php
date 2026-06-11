@@ -43,14 +43,6 @@ use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Spatie\Honeypot\ProtectAgainstSpam;
 
-if (env('APP_ENV') === 'production') {
-    \URL::forceScheme('https');
-}
-
-if (version_compare(PHP_VERSION, '7.2.0', '>=')) {
-    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
-}
-
 Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedirect', 'localizationRedirect', 'localeViewPath')->group(function () {
 
     Route::get('login/google', [LoginController::class, 'redirectToGoogle'])->name('login.google');
@@ -79,7 +71,6 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('admin/resources', [ResourceController::class, 'index'])->middleware('auth');
     Route::post('admin/resources', [ResourceController::class, 'index'])->name('resources')->middleware('admin');
     Route::get('resources/list', [ResourceController::class, 'list'])->name('resourceList');
-    Route::get('resources/filter', [ResourceController::class, 'resourceFilter'])->name('resourceFilter');
     Route::get('resources/filter/subject', [ResourceController::class, 'getSubjectChildren']);
     Route::post('resources/filter/update-options', [ResourceController::class, 'updateFilterOptions'])->name('filter.update-options');
     Route::get('resources/priorities', [ReportController::class, 'resourcePriorities']);
@@ -89,24 +80,16 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('resource/{resourceId}', [ResourceController::class, 'viewPublicResource']);
     Route::post('resource/download_counter', [ResourceController::class, 'resourceDownloadCounter'])->middleware('auth');
     Route::get('resources', [ResourceController::class, 'list']);
-    Route::get('resources/add/step1', [ResourceController::class, 'createStepOne'])->name('step1')->middleware('auth')->middleware('verified');
-    Route::post('resources/add/step1', [ResourceController::class, 'postStepOne']);
-    Route::get('resources/add/step2', [ResourceController::class, 'createStepTwo'])->name('step2')->middleware('auth')->middleware('verified');
-    Route::post('resources/add/step2', [ResourceController::class, 'postStepTwo']);
-    Route::get('resources/add/step3', [ResourceController::class, 'createStepThree'])->name('step3')->middleware('auth')->middleware('verified');
-    Route::post('resources/add/step3', [ResourceController::class, 'postStepThree'])->middleware(ProtectAgainstSpam::class);
+    Route::get('resources/add', [ResourceController::class, 'form'])->name('resource.form')->middleware('auth', 'verified');
+    Route::post('resources/save', [ResourceController::class, 'save'])->name('resource.save')->middleware('auth', 'verified');
+    Route::get('resources/edit/{resourceId}', [ResourceController::class, 'form'])->name('resource.form.edit')->middleware('auth', 'verified');
+    Route::post('resources/save/{resourceId}', [ResourceController::class, 'save'])->name('resource.save.edit')->middleware('auth', 'verified');
     Route::get('resources/attributes/{entity}', [ResourceController::class, 'attributes']);
-    Route::post('resources/flag', [ResourceController::class, 'flag'])->name('flag');
+    Route::post('resources/flag', [ResourceController::class, 'flag'])->name('flag')->middleware(ProtectAgainstSpam::class);
     Route::post('resources/comment', [ResourceController::class, 'comment'])->name('comment')->middleware('auth')->middleware('verified');
     Route::get('admin/resource/published/{resourceId}', [ResourceController::class, 'published']);
     Route::get('admin/resource/delete/{resourceId}', [ResourceController::class, 'deleteResource'])->middleware('admin');
-    Route::get('resources/edit/step1/{resourceId}', [ResourceController::class, 'createStepOneEdit'])->name('edit1')->middleware('LibraryManager');
-    Route::post('resources/edit/step1/{resourceId}', [ResourceController::class, 'postStepOneEdit'])->middleware('LibraryManager');
-    Route::get('resources/edit/step2/{resourceId}', [ResourceController::class, 'createStepTwoEdit'])->name('edit2')->middleware('LibraryManager');
-    Route::post('resources/edit/step2/{resourceId}', [ResourceController::class, 'postStepTwoEdit'])->middleware('LibraryManager');
-    Route::get('resources/edit/step3/{resourceId}', [ResourceController::class, 'createStepThreeEdit'])->name('edit3')->middleware('LibraryManager');
-    Route::post('resources/edit/step3/{resourceId}', [ResourceController::class, 'postStepThreeEdit'])->middleware('LibraryManager');
-    Route::post('resource/{resourceId}', [ResourceController::class, 'updateTid'])->middleware('admin')->name('updatetid');
+    Route::post('resource/{resourceId}', [ResourceController::class, 'updateTid'])->middleware('admin', ProtectAgainstSpam::class)->name('updatetid');
     // delete a file
     Route::get('delete/file/{resourceId}/{fileName}', [ResourceController::class, 'deleteFile'])->name('delete-file')->middleware('LibraryManager');;
     // Contact
@@ -180,7 +163,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
             Route::post('menu/update/{menuId}', 'update')->name('update_menu');
             Route::get('menu/translate/{menuId}', 'translate');
             Route::delete('menu/{menuId}', 'destroy')->name('delete_menu');
-            Route::get('menu/sort', 'sort')->name('sort_menu');
+            Route::post('menu/sort', 'sort')->name('sort_menu');
             Route::get('menu/ajax_get_parents', 'ajaxGetParents')->name('ajax_get_parents');
         });
 
@@ -237,7 +220,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::prefix('glossary')->controller(GlossaryController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'index')->name('glossary');
-        Route::prefix('glossary')->middleware('LibraryManager')->group(function () {
+        Route::middleware('LibraryManager')->group(function () {
             Route::get('create', 'create')->name('glossary_create');
             Route::post('store', 'store')->name('glossary_store');
             Route::post('update', 'update')->name('glossary_update');
@@ -323,10 +306,6 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     // Adding old DDL routes
     Route::get('/user/register', [RegisterController::class, 'showRegistrationForm']);
     Route::get('/user', [LoginController::class, 'showLoginForm']);
-    Route::get('/access-library', [ResourceController::class, 'createStepOne'])->middleware('auth')->middleware('verified');
-    Route::get('/node/add', [ResourceController::class, 'createStepOne'])->middleware('auth')->middleware('verified');
-    Route::get('/node/add/resourcefile', [ResourceController::class, 'createStepOne'])->middleware('auth')->middleware('verified');
-    Route::get('/add/resourcefile', [ResourceController::class, 'createStepOne'])->middleware('auth')->middleware('verified');
     Route::get('/node/{resourceId}', [ResourceController::class, 'viewPublicResource']);
     Route::get('/user/logout', [LoginController::class, 'logout']);
     Route::get('/user/password', [ForgotPasswordController::class, 'showLinkRequestForm']);
@@ -373,7 +352,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     });
 });
 
-Route::post('/upload-image', [ResourceFileController::class, 'uploadImage'])->name('upload.image');
+Route::post('/upload-image', [ResourceFileController::class, 'uploadImage'])->name('upload.image')->middleware(ProtectAgainstSpam::class);
 Route::get('/search-images', [ResourceFileController::class, 'searchImages'])->name('search.images');
 Route::post('upload-image-from-editor', [FileController::class, 'uploadtImageFromEditor'])->name('upload.image.from.editor')->middleware('auth');
 

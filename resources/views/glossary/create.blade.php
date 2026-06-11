@@ -7,37 +7,45 @@
 @endsection
 
 @section('content')
-    <section class="ddl-forms">
-        <header><h1>@lang('Add a new glossary item')</h1></header>
-        <div class="content-body">
-            @include('layouts.messages')
-            <div style="color: #777; font-size: 14px;">@lang('One of the three fields (English, Farsi or Pashto) is required.')</div><br>
-            <form method="POST" action="{{ route('glossary_store') }}">
-                @csrf
-                <div class="form-item">
-                    <label for="english"><strong>@lang('English')</strong></label>
-                    <textarea class="form-control" rows="4" cols="100" name="english" id="english"></textarea>
+    <div class="container py-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">@lang('Add a new glossary item')</h4>
+            </div>
+            <div class="card-body">
+                @include('layouts.messages')
+                <div class="alert alert-info small">
+                    <i class="ph-light ph-info"></i> @lang('One of the three fields (English, Farsi or Pashto) is required.')
                 </div>
-                <div class="form-item">
-                    <label for="farsi"><strong>@lang('Farsi')</strong></label>
-                    <textarea class="form-control" rows="4" cols="100" name="farsi" id="farsi"></textarea>
-                </div>
-                <div class="form-item">
-                    <label for="pashto"><strong>@lang('Pashto')</strong></label>
-                    <textarea class="form-control" rows="4" cols="100" name="pashto" id="pashto"></textarea>
-                </div>
-                <div class="form-item">
-                    <select name="subject" class="form-control">
-                        <label for="subject"><strong>@lang('Subject')</strong> <span class="form-required" title="This field is required.">*</span></label>
-                        @foreach($glossary_subjects as $id => $subject)
-                            <option value="{{ $id }}" >{{ $subject }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="left-side">
-                    <input class="btn btn-primary btn-md" type="submit" value="@lang('Submit')">
-                </div>
-            </form>
+                <form method="POST" action="{{ route('glossary_store') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="english" class="form-label fw-semibold">@lang('English')</label>
+                        <textarea class="form-control" rows="3" name="english" id="english"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="farsi" class="form-label fw-semibold">@lang('Farsi')</label>
+                        <textarea class="form-control" rows="3" name="farsi" id="farsi"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pashto" class="form-label fw-semibold">@lang('Pashto')</label>
+                        <textarea class="form-control" rows="3" name="pashto" id="pashto"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label fw-semibold">
+                            @lang('Subject') <span class="text-danger">*</span>
+                        </label>
+                        <select name="subject" class="form-select" id="subject" required>
+                            @foreach($glossary_subjects as $id => $subject)
+                                <option value="{{ $id }}">{{ $subject }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">@lang('Submit')</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </section>
+    </div>
 @endsection

@@ -64,7 +64,7 @@
                                         <strong>First Name</strong>
                                     </td>
                                     <td>
-                                        <input type="text" name="first_name" class="form-control" value="{{ $user->profile->first_name }}" required>
+                                        <input type="text" name="first_name" class="form-control" value="{{ $user->profile?->first_name }}" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -72,7 +72,7 @@
                                         <strong>Last Name</strong>
                                     </td>
                                     <td>
-                                        <input type="text" name="last_name" class="form-control" value="{{ $user->profile->last_name }}" required>
+                                        <input type="text" name="last_name" class="form-control" value="{{ $user->profile?->last_name }}" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -80,9 +80,9 @@
                                     <td>
                                         <select name="gender" required>
                                             <option value=""></option>
-                                            <option value="Male" {{ ($user->profile->gender=="Male"?"selected":"") }}>Male</option>
-                                            <option value="Female" {{ ($user->profile->gender=="Female"?"selected":"") }}>Female</option>
-                                            <option value="None" {{ ($user->profile->gender=="None"?"selected":"") }}>Prefer not to say</option>
+                                            <option value="Male" {{ ($user->profile?->gender=="Male"?"selected":"") }}>Male</option>
+                                            <option value="Female" {{ ($user->profile?->gender=="Female"?"selected":"") }}>Female</option>
+                                            <option value="None" {{ ($user->profile?->gender=="None"?"selected":"") }}>Prefer not to say</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -99,16 +99,16 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Phone</strong></td>
-                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile->phone }}"></a></td>
+                                    <td><input type="text" name="phone" class="form-control" value="{{ $user->profile?->phone }}"></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Country</strong></td>
                                     <td>
-                                        Country: {{ $user->profile->country }} <br/>
-                                        City: {{ $user->profile->city }} <br/>
+                                        Country: {{ $user->profile?->country }} <br/>
+                                        City: {{ $user->profile?->city }} <br/>
                                         <select name="country" id="country" onchange="javascript:populate(this,'city', {{ json_encode($provinces) }})" required>
                                             @foreach($countries AS $cn)
-                                            <option value="{{ $cn->tnid }}" {{ ($user->profile->country==$cn->tnid?"selected":"") }}>{{ $cn->name }}</option>
+                                            <option value="{{ $cn->tnid }}" {{ ($user->profile?->country==$cn->tnid?"selected":"") }}>{{ $cn->name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -119,10 +119,10 @@
                                         <select name="city" id="city">
                                             <option value=""> - None -</option>
                                             @foreach($provinces AS $pn)
-                                            <option value="{{ $pn->tnid }}" {{ ($user->profile->city==$pn->tnid?"selected":"") }}>{{ $pn->name }}</option>
+                                            <option value="{{ $pn->tnid }}" {{ ($user->profile?->city==$pn->tnid?"selected":"") }}>{{ $pn->name }}</option>
                                             @endforeach
                                         </select>
-                                    <input type="text" class="form-control" name="city_other" id="js-text-city" size="40" value="{{ $user->profile->city }}" style="display:none;">
+                                    <input type="text" class="form-control" name="city_other" id="js-text-city" size="40" value="{{ $user->profile?->city }}" style="display:none;">
                                     </td>
                                 </tr>
                                 <tr>
@@ -147,7 +147,7 @@
 <!-- /.container-fluid-->
 <!-- /.content-wrapper-->
 @push('scripts')
-    @vite('resources/assets/js/ddl.jsx')
+    @vite('resources/assets/js/app.jsx')
     <script>
         $(document).ready(function(){
             $('#country').trigger('change');

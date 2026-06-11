@@ -15,7 +15,11 @@ class SurveyQuestionOptionController extends Controller
     {
         $lang = config('app.locale');
         $question_self = SurveyQuestion::find($id);
-        $all_questions = SurveyQuestion::where(['tnid' => $question_self->tnid, 'language' => $lang])->get();
+
+        if (!$question_self) {
+            abort(404);
+        }
+        $all_questions = SurveyQuestion::where(['tnid' => $question_self?->tnid, 'language' => $lang])->get();
         $all_question_ids = [];
         foreach ($all_questions as $question) {
             $all_question_ids[] = $question->id;
@@ -76,7 +80,7 @@ class SurveyQuestionOptionController extends Controller
     {
         $option = SurveyQuestionOption::where('id', $tnid)->first();
         $question = SurveyQuestion::where(['tnid' => $option->question_id, 'language' => $lang])->first();
-        $survey = Survey::find($question->survey_id);
+        $survey = Survey::find($question?->survey_id);
 
         return view('admin.surveys.option.add_translation', compact('tnid', 'lang', 'question', 'survey'));
     }

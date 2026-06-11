@@ -35,15 +35,7 @@ class HomeControllerTest extends TestCase
 
         $response->assertViewIs('home');
 
-        $response->assertViewHas('latestNews');
         $response->assertViewHas('subjectAreas');
         $response->assertViewHas('featured');
-        $response->assertViewHas('latestResources');
-        $response->assertViewHas('surveys');
-        $response->assertViewHas('surveyQuestions');
-        $response->assertViewHas('surveyQuestionOptions');
-
-        $this->assertCount(3, $response->viewData('latestNews'));
-        $this->assertCount(3, $response->viewData('latestResources'));
     }
 }

@@ -1,0 +1,10 @@
+td[contenteditable="true"] {
+  cursor: text;
+  border-bottom: 2px dashed var(--bs-primary) !important;
+
+  &:focus {
+    outline: none;
+    background-color: var(--bs-light);
+  }
+}
+

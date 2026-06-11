@@ -91,8 +91,8 @@
                                     </td>
                                     <td>
                                         <select name="status" id="status">
-                                            <option value="0" {{ ($details->status==0?"selected":"") }}>Hidden</option>
-                                            <option value="1" {{ ($details->status==1?"selected":"") }}>Visible</option>
+                                            <option value="0" {{ (isset($details) && $details?->status==0 ? "selected" : "") }}>Hidden</option>
+                                            <option value="1" {{ (isset($details) && $details?->status==1 ? "selected" : "") }}>Visible</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -119,7 +119,7 @@
 <!-- /.container-fluid-->
 <!-- /.content-wrapper-->
 @push('scripts')
-    @vite('resources/assets/js/ddl.jsx')
+    @vite('resources/assets/js/app.jsx')
     <script>
         $(document).ready(function(){
             $('#country').trigger('change');

@@ -1,115 +1,43 @@
 @use 'sass:color';
 
-$color-text-light: #f8f9fa;
-$color-dark-bg: #343a40;
-$color-link: #ffffff;
-$color-link-hover: #ffa800;
-
-$color-twitter: #1da1f2;
-$color-facebook: #4267b2;
-$color-youtube: #ff0000;
-
 #main-footer {
-  background-color: $color-dark-bg;
-  color: $color-text-light;
+  background-color: $primary;
+  color: $white;
   padding: 2rem 0;
 
   a {
-    color: $color-link;
+    color: $white;
     text-decoration: none;
 
     &:hover {
-      color: $color-link-hover;
-      text-decoration: underline;
+      color: $secondary;
     }
   }
 
-  .footer-nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+  .app-badge {
+    height: 40px;
+    width: auto;
+    transition: transform 0.2s ease;
 
-    li {
-      margin-right: 1.5rem;
-      margin-bottom: 0.5rem;
-
-      &:last-child {
-        margin-right: 0;
-      }
-
-      @media (max-width: 768px) {
-        margin-right: 0rem;
-      }
-    }
-  }
-
-  .footer-right-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 1.5rem;
-    }
-  }
-
-  .app-badges {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-
-    @media (min-width: 768px) {
-      margin-bottom: 0;
-    }
-
-    .app-badge {
-      height: 40px;
-      width: auto;
-      transition: transform 0.2s ease;
-
-      &:hover {
-        transform: translateY(-2px);
-      }
+    &:hover {
+      transform: translateY(-2px);
     }
   }
 
 
   .social-icons {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1rem;
-
     .social-icon {
-      font-size: 2rem;
+      color: $white;
       transition: color 0.3s ease;
 
-      &.twitter {
-        color: $color-twitter;
-        &:hover { color: color.adjust($color-twitter, $lightness: 15%); }
-      }
-      &.facebook {
-        color: $color-facebook;
-        &:hover { color: color.adjust($color-facebook, $lightness: 15%); }
-      }
-      &.youtube {
-        color: $color-youtube;
-        &:hover { color: color.adjust($color-youtube, $lightness: 15%); }
+      &:hover {
+        color: $secondary;
       }
     }
   }
 
-  .small {
-    font-size: 0.875em;
-  }
 
-  .text-muted {
-    color: color.adjust($color-dark-bg, $lightness: 50%) !important;
+  .copyright-muted-text {
+    $color: color.adjust($primary, $lightness: 40%)
   }
 }

@@ -423,7 +423,7 @@ function parse_user_agent(?string $u_agent = null): array
 }
 
 if (! function_exists('DDLClearSession')) {
-    function DDLClearSession()
+    function DDLClearSession(): void
     {
         // setting the search session empty
         if (
@@ -433,7 +433,6 @@ if (! function_exists('DDLClearSession')) {
             session()->has('search')
         ) {
             session()->forget(['resource1', 'resource2', 'resource3', 'search']);
-            session()->save();
         }
     }
 }
@@ -663,11 +662,10 @@ if (! function_exists('watermark_pdf')) {
     if (! function_exists('getFile')) {
         function getFile($file): string
         {
-            if (config('app.env') != 'production') {
-                return Storage::disk('public')->url($file);
-            } else {
+            if (config('services.cloudfront.key_pair_id')) {
                 return app(CloudFrontService::class)->signedUrl($file);
             }
+            return Storage::url($file);
         }
     }
 

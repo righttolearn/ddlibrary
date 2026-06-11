@@ -43,7 +43,7 @@
                                             <td>
                                                 <input type="number" name="weight[{{ $localeCode }}]"
                                                     value="{{ $data['term']['weight'] }}" class="form-control"
-                                                    placeholder="Enter {{ $language['weight'] }} weight">
+                                                    placeholder="Enter weight">
                                             </td>
 
                                             {{-- Parent --}}

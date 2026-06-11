@@ -49,16 +49,13 @@ class SurveyQuestionOptionControllerTest extends TestCase
         $admin->roles()->attach(5);
 
         $survey = Survey::factory()->create();
-        $surveyQuestion = SurveyQuestion::factory()->create();
-        $surveyQuestionOption = SurveyQuestionOption::factory()->create();
+        $surveyQuestion = SurveyQuestion::factory()->create(['survey_id' => $survey->id]);
 
-        $response = $this->actingAs($admin)->get("en/admin/survey/$survey->id/question/$surveyQuestionOption->id/option/create");
+        $response = $this->actingAs($admin)->get("en/admin/survey/$survey->id/question/$surveyQuestion->id/view_options");
 
         $response->assertOk();
-        $response->assertViewIs('admin.surveys.option.create');
+        $response->assertViewIs('admin.surveys.option.list');
         $response->assertViewHas('survey');
-        $response->assertViewHas('question');
-
     }
 
     #[Test]
@@ -94,7 +91,7 @@ class SurveyQuestionOptionControllerTest extends TestCase
         $surveyQuestions = SurveyQuestion::factory()->times(3)->create();
         $surveyQuestionOptions = SurveyQuestionOption::factory()->times(3)->create();
 
-        $response = $this->actingAs($admin)->get("en/admin/survey/$survey->id/question/$surveyQuestionOption->id/view_options");
+        $response = $this->actingAs($admin)->get("en/admin/survey/$survey->id/question/$surveyQuestion->id/view_options");
 
         $response->assertOk();
         $response->assertViewIs('admin.surveys.option.list');

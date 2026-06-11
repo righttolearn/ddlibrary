@@ -15,6 +15,12 @@ class TaxonomyTerm extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'vid',
+        'language',
+    ];
+
     protected $guarded = [];
 
     /**

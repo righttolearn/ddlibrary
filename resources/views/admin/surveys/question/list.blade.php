@@ -12,7 +12,7 @@
         <li class="breadcrumb-item">
             <a href="{{ URL::to('admin/surveys') }}">Surveys</a>
           </li>
-        <li class="breadcrumb-item active">{{ $survey->name}}</li>
+        <li class="breadcrumb-item active">{{ $survey?->name}}</li>
       </ol>
 
       <!-- Surveys Answers DataTables -->
@@ -27,8 +27,8 @@
                   {{ session('status') }}
               </div>
             @endif
-            @if ($survey->language == 'en')
-              <a href="{{ URL::to('admin/survey/question/add/'.$survey->id) }}" class="btn btn-success pull-right" style="margin-bottom: 10px">
+            @if ($survey?->language == 'en')
+              <a href="{{ URL::to('admin/survey/question/add/'.$survey?->id) }}" class="btn btn-success pull-right" style="margin-bottom: 10px">
                 <span class="fa fa-plus"></span> Add New
               </a>
             @endif
@@ -59,9 +59,9 @@
                     </td>
                     <td style="display: flex;">
                       @if ($survey_question->type != 'descriptive')
-                        <a href="{{ URL::to('admin/survey/'.$survey->id.'/question/'.$survey_question->id.'/view_options') }}" class="badge badge-primary" style="margin-right:5px;">Options</a>
+                        <a href="{{ URL::to('admin/survey/'.$survey?->id.'/question/'.$survey_question->id.'/view_options') }}" class="badge badge-primary" style="margin-right:5px;">Options</a>
                       @endif
-                      <a href="{{ URL::to('admin/survey/'.$survey->id.'/question/view/'.$survey_question->id.'/'.$survey_question->tnid) }}" class="badge badge-primary" style="margin-right: 5px;">Translations</a>
+                      <a href="{{ URL::to('admin/survey/'.$survey?->id.'/question/view/'.$survey_question->id.'/'.$survey_question->tnid) }}" class="badge badge-primary" style="margin-right: 5px;">Translations</a>
                       <a href="javascript:void(0)" id="{{$survey_question->id}}" onclick="confirm(this.id);" class="badge badge-danger">Delete</a>
                     </td>
                   </tr>

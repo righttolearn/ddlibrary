@@ -1,8 +1,22 @@
-
 // Body
-$body-bg: #f5f8fa;
+$body-bg: #ffffff;
+
+// Colors
+$primary: #2f6165;
+$secondary: #f38c3c;
 
 // Typography
-$font-family-sans-serif: "Roboto", sans-serif;
+$font-family-sans-serif: "Inter", Arial, sans-serif;
+$font-family-serif: "EB Garamond", serif;
+
+$headings-font-family: $font-family-sans-serif;
+$headings-font-weight: 500;
+$h1-font-size: 3rem;
+$h2-font-size: 2.5rem;
+$h3-font-size: 2rem;
+
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
+
+// Bootstrap
+$enable-negative-margins: true;

@@ -1,13 +1,30 @@
-<div class="container text-center mb-4">
+<div class="container-fluid bg-secondary text-center py-5">
 
-    <h2 class="my-3">@lang('Free and open educational resources for Afghanistan')</h2>
+    <h2 class="my-5 text-white">{!! __('Free and open educational<br>resources for Afghanistan') !!}</h2>
 
     <form class="justify-content-center row" method="GET" action="{{ route('resourceList') }}">
-        <div class="form-group col-md-6 col-12 my-2">
-            <label for="search" class="sr-only">@lang('Search')</label>
-            <input type="text" id="search" name="search" class="form-control" placeholder="@lang('Search our growing library!')">
+        <div class="col-md-7 col-12 my-2">
+            <div class="input-group">
+                <input type="text" id="search" name="search" class="form-control form-control-lg" placeholder="@lang('Search our growing library!')">
+                <button class="btn btn-primary btn-lg" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+                @if(request()->routeIs('resourceList'))
+                    <button class="btn btn-primary ms-1 d-flex align-items-center"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#filterPanel"
+                            title="@lang('Filter')">
+                        <i class="ph-fill ph-sliders filter-icon"></i>
+                    </button>
+                @else
+                    <a href="{{ route('resourceList') }}#filterPanel"
+                       class="btn btn-primary ms-1 d-flex align-items-center"
+                       title="@lang('Filter')">
+                        <i class="ph-fill ph-sliders filter-icon"></i>
+                    </a>
+                @endif
+            </div>
         </div>
-        <input type="submit" class="btn btn-primary col-md-1 col-2 my-2" value="@lang('Go')">
-        <a href="{{ route('resourceFilter') }}" class="btn btn-outline-secondary col-md-1 col-2 {{ (Lang::locale() != 'en') ? 'me-1' : 'ms-1' }} my-2">@lang('Filter')</a>
     </form>
 </div>

@@ -43,12 +43,6 @@ class ResourceFileController extends Controller
         $filelabel = auth()->user()->id.'_'.time().'.'.$file->getClientOriginalExtension();
         $path = 'files/'.$filelabel;
 
-        $diskType = 's3';
-        if (config('app.env') != 'production') {
-            $diskType = 'public';
-        }
-        Storage::disk($diskType)->put($path, file_get_contents($file));
-
         $imagine = new Imagine;
         $image = $imagine->open($file->getRealPath());
 
@@ -57,7 +51,7 @@ class ResourceFileController extends Controller
         $height = $image->getSize()->getHeight();
 
         // Get file size
-        $size = round($file->getSize() / 1024); // Get with KB
+        $size = intval($file->getSize() / 1024); // Get with KB
 
         $thumbnailPath = 'files/thumbnails/'.$filelabel;
 
@@ -69,28 +63,31 @@ class ResourceFileController extends Controller
 
         $image->resize(new Box(250, 250))->save($tempDirectory.'/'.$filelabel);
 
-        Storage::disk($diskType)->put($thumbnailPath, file_get_contents($tempDirectory.'/'.$filelabel));
+        try {
+            Storage::putFileAs('files', $file, $filelabel);
+            Storage::put($thumbnailPath, file_get_contents($tempDirectory.'/'.$filelabel));
 
-        $resourceFile = ResourceFile::create([
-            'label' => $request->image_name ?: pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
-            'language' => $request->language ?: config('app.locale'),
-            'taxonomy_term_data_id' => $request->taxonomy_term_data_id,
-            'name' => $filelabel,
-            'height' => $height,
-            'width' => $width,
-            'size' => $size,
-        ]);
-
-        // Cleanup temporary thumbnail file
-        $tempThumbFile = $tempDirectory.'/'.$filelabel;
-        if (file_exists($tempThumbFile)) {
-            @unlink($tempThumbFile);
+            $resourceFile = ResourceFile::create([
+                'label' => $request->image_name ?: pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'language' => $request->language ?: config('app.locale'),
+                'taxonomy_term_data_id' => $request->taxonomy_term_data_id,
+                'name' => $filelabel,
+                'height' => $height,
+                'width' => $width,
+                'size' => $size,
+            ]);
+        } finally {
+            if (file_exists($tempDirectory.'/'.$filelabel)) {
+                unlink($tempDirectory.'/'.$filelabel);
+            }
         }
 
         return response()->json([
             'success' => true,
             'resource_file_id' => $resourceFile->id,
-            'imageUrl' => Storage::disk($diskType)->temporaryUrl($thumbnailPath, now()->addMinutes(5)),
+            'imageUrl' => app()->isProduction()
+                ? Storage::temporaryUrl($thumbnailPath, now()->addMinutes(5))
+                : Storage::url($thumbnailPath),
             'imageName' => $resourceFile->label,
             'message' => __('Image uploaded successfully'),
         ]);
@@ -119,6 +116,6 @@ class ResourceFileController extends Controller
         $count = $query->count();
         $files = $query->orderByDesc('created_at')->paginate(16)->appends(Arr::except($request->all(), ['page']));
 
-        return view('resources.partial.file-list', compact('count', 'files'));
+        return view('resources.partials.file-list', compact('count', 'files'));
     }
 }

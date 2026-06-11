@@ -230,8 +230,28 @@ class TaxonomyController extends Controller
         $parents = ($vid != TaxonomyVocabularyEnum::ResourceType->value) ? TaxonomyTerm::where('vid', $vid)->where('tnid', '!=', $tnid)->get() : null;
 
         $terms = $terms->keyBy('language')->map(function ($term) {
-            return ['term' => $term];
+            return [
+                'term' => [
+                    'name' => $term->name,
+                    'weight' => $term->weight,
+                    'id' => $term->id,
+                    'taxonomyHierarchy' => ['parent' => $term->taxonomyHierarchy?->parent ?? 0],
+                ]
+            ];
         });
+
+        foreach ($languages as $localeCode => $language) {
+            if (!$terms->has($localeCode)) {
+                $terms[$localeCode] = [
+                    'term' => [
+                        'name' => '',
+                        'weight' => 0,
+                        'id' => '',
+                        'taxonomyHierarchy' => ['parent' => 0],
+                    ]
+                ];
+            }
+        }
 
         return view('admin.taxonomy.taxonomy-vocabularies.edit', compact('parents', 'terms', 'languages', 'tnid', 'vocabulary'));
     }

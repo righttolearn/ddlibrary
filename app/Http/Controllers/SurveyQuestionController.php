@@ -15,7 +15,7 @@ class SurveyQuestionController extends Controller
     {
         $lang = config('app.locale');
         $survey = Survey::find($id);
-        $survey_questions = SurveyQuestion::where(['survey_id' => $survey->tnid, 'language' => $lang])->get();
+        $survey_questions = SurveyQuestion::where(['survey_id' => $survey?->tnid, 'language' => $lang])->get();
 
         return view('admin.surveys.question.list', compact('survey', 'survey_questions'));
     }

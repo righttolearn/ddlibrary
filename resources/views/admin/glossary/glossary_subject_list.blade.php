@@ -85,7 +85,6 @@
         <!-- /.content-wrapper-->
 @endsection
 @push('scripts')
-    @vite('resources/assets/js/ddl.jsx')
     <script>
         $(document).ready(function() {
             $(function() {
