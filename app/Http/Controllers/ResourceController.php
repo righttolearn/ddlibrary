@@ -553,39 +553,30 @@ class ResourceController extends Controller
         DB::beginTransaction();
 
         try {
-            Storage::disk('s3')->delete('resources/'.$fileName);
+            Storage::delete('resources/'.$fileName);
 
-            ResourceAttachment::where('resource_id', $resourceId)->where('file_name', $fileName)->delete();
-
-            $resource = Resource::find($request->resourceId);
-
-            $dataAttachments = $resource->resourceAttachments($resourceId)->toArray();
-            foreach ($dataAttachments as $item) {
-                $resourceAttachments[] = [
-                    'file_name' => $item->file_name,
-                    'file_size' => $item->file_size,
-                    'file_mime' => $item->file_mime,
-                ];
-            }
-            $resource['attc'] = $resourceAttachments;
-            $request->session()->put('edit_resource_step_2', $resource);
-            $request->session()->save();
+            ResourceAttachment::where('resource_id', $resourceId)
+                ->where('file_name', $fileName)
+                ->delete();
 
             DB::commit();
+
             Session::flash('alert', [
                 'message' => __('Your file successfully has been deleted.'),
                 'level' => 'success',
             ]);
 
-            return redirect("resources/edit/step2/$resourceId");
+            return redirect()->route('resource.form.edit', $resourceId);
+
         } catch (\Exception $e) {
             DB::rollback();
+
             Session::flash('alert', [
                 'message' => __('Operation has failed.'),
                 'level' => 'danger',
             ]);
 
-            return redirect("resources/edit/step2/$resourceId");
+            return redirect()->route('resource.form.edit', $resourceId);
         }
     }
 
