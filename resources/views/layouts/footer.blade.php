@@ -13,7 +13,7 @@
                 <h4>@lang('Latest resources')</h4><br>
                 @foreach($latestResources AS $resource)
                     <a href="{{ URL::to('resource/'.$resource->id) }}" title="{{ $resource->title }}">
-                        <p>{{ $resource->title }}<br><span class="badge text-bg-secondary text-white fw-normal">{{ __($resource->updated_at->diffForHumans()) }}</span></p>
+                        <p>{{ $resource->title }}<br><span class="badge text-bg-secondary text-white fw-normal">{{ __($resource->created_at->diffForHumans()) }}</span></p>
                     </a>
                 @endforeach
             </div>
