@@ -20,18 +20,18 @@
             <i class="ph-light ph-plus"></i> @lang('Add more files')
         </button>
 
-        @if (isset($resource['attc']) && $edit)
+        @if($edit && $resource->attachments->isNotEmpty())
             <div class="bg-light py-3 px-2 rounded my-2">
-                @foreach ($resource['attc'] as $item)
-                    <div class="d-flex gap-3 mb-2 file-{{ $loop->iteration }}">
+                @foreach($resource->attachments as $attachment)
+                    <div class="d-flex gap-3 mb-2">
                         <div class="align-self-center text-muted small">{{ $loop->iteration }}.</div>
                         <div class="flex-grow-1">
-                            <a href="{{ asset('/storage/attachments/' . $item['file_name']) }}" target="_blank">
-                                {{ $item['file_name'] }}
+                            <a href="{{ asset('/storage/attachments/' . $attachment->file_name) }}" target="_blank">
+                                {{ $attachment->file_name }}
                             </a>
                         </div>
                         <div class="align-self-center">
-                            <a href="{{ url('delete/file/' . $resource['id'] . '/' . $item['file_name']) }}"
+                            <a href="{{ url('delete/file/' . $resource->id . '/' . $attachment->file_name) }}"
                                class="text-danger text-decoration-none"
                                data-action="confirm-delete"
                                data-confirm="@lang('Are you sure you want to delete this file?')">

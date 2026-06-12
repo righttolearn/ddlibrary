@@ -74,6 +74,6 @@
     </div>
 </section>
 @endsection
-@section('script')
-     <x-head.tinymce-config/>
-@endsection
+@push('scripts')
+    <x-head.tinymce-config/>
+@endpush
