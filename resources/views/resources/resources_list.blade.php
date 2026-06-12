@@ -45,7 +45,7 @@
                                             @if($resource->publisher) {{ $resource->publisher }} @endif
                                         </p>
                                         @if($resource->abstract)
-                                            <p class="card-text small text-truncate-2">{{ Str::limit($resource->abstract, 150) }}</p>
+                                            <p class="card-text small text-truncate-2">{{ Str::limit(strip_tags(fixImage($resource->abstract, $resource->id)), 150) }}</p>
                                         @endif
                                     </div>
                                 </div>
