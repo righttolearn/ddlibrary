@@ -57,15 +57,15 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('admin/users', [UserController::class, 'index'])->middleware('admin');
     Route::post('admin/users', [UserController::class, 'index'])->name('user')->middleware('admin');
     Route::get('admin/users/users-data', [UserController::class, 'usersData'])->middleware('admin');
-    Route::get('user/profile', [UserController::class, 'viewUser'])->where('userId', '[0-9]+')->name('user-view');
-    Route::get('user/favorites', [UserController::class, 'favorites'])->where('userId', '[0-9]+')->name('user-favorites');
-    Route::get('user/uploaded-resources', [UserController::class, 'uploadedResources'])->where('userId', '[0-9]+')->name('user-uploaded-resources');
-    Route::post('user/update_profile', [UserController::class, 'updateProfile'])->name('user-profile-update');
+    Route::get('user/profile', [UserController::class, 'viewUser'])->middleware('auth')->where('userId', '[0-9]+')->name('user-view');
+    Route::get('user/favorites', [UserController::class, 'favorites'])->middleware('auth')->where('userId', '[0-9]+')->name('user-favorites');
+    Route::get('user/uploaded-resources', [UserController::class, 'uploadedResources'])->middleware('auth')->where('userId', '[0-9]+')->name('user-uploaded-resources');
+    Route::post('user/update_profile', [UserController::class, 'updateProfile'])->middleware('auth')->name('user-profile-update');
     Route::get('admin/user/edit/{userId}', [UserController::class, 'edit'])->name('edit_user')->middleware('admin');
     Route::post('admin/user/update/{userId}', [UserController::class, 'update'])->name('update_user')->middleware('admin');
     Route::get('admin/user/delete/{userId}', [UserController::class, 'deleteUser'])->middleware('admin');
     Route::get('admin/user/export', [UserController::class, 'exportUsers'])->middleware('admin');
-    Route::post('update-gender', [UserController::class, 'updateGender'])->name('update.gender');
+    Route::post('update-gender', [UserController::class, 'updateGender'])->middleware('auth')->name('update.gender');
 
     // Resources
     Route::get('admin/resources', [ResourceController::class, 'index'])->middleware('auth');
