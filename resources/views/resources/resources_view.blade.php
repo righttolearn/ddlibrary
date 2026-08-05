@@ -41,7 +41,7 @@
                                 @lang('Your browser does not support audio, please download the file.')
                             </audio>
                         @elseif($ePub)
-                            <div class="container-fluid p-2 d-none" id="epubViewer">
+                            <div class="container-fluid p-2" id="epubViewer">
                                 <div class="text-center mb-4">
                                     <h1 class="display-4 fw-light mb-2" id="epubTitle">@lang('Loading, please wait')</h1>
                                     <p class="fs-5 text-muted" id="epubAuthor">@lang('Author')</p>

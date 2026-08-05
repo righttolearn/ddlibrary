@@ -140,21 +140,33 @@ class EPUBViewer {
     }
 
     updateControls() {
-        document.getElementById('prevBtn').disabled = this.currentPage === 0;
-        document.getElementById('nextBtn').disabled = this.currentPage >= this.totalPages - 1;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (prevBtn){
+            prevBtn.disabled = this.currentPage === 0;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = this.currentPage >= this.totalPages - 1;
+        }
     }
 
     updateProgress() {
         if (this.totalPages > 0) {
             const progress = ((this.currentPage + 1) / this.totalPages) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
         }
     }
 
     updateStatus() {
         if (this.totalPages > 0) {
-            document.getElementById('epubStatus').textContent = 
-                ` ${this.currentPage + 1} / ${this.totalPages}`;
+            const epubStatus = document.getElementById('epubStatus');
+            if (epubStatus) {
+                epubStatus.textContent = ` ${this.currentPage + 1} / ${this.totalPages}`;
+            }
         }
     }
 
