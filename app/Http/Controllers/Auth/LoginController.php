@@ -57,6 +57,27 @@ class LoginController extends Controller implements HasMiddleware
 
     public function handleGoogleCallback(): RedirectResponse
     {
+        if (request()->has('error')) {
+            $error = request()->query('error');
+
+            Log::info('Google OAuth denied or errored', [
+                'error' => $error,
+                'session_id' => session()->getId(),
+                'ip' => request()->ip(),
+            ]);
+
+            return redirect('/login')->with(
+                'error',
+                $error === 'access_denied'
+                    ? __('You cancelled the Google sign-in. Please try again if this was a mistake.')
+                    : __('Something went wrong signing in with Google.')
+            );
+        }
+
+        if (! request()->has('code')) {
+            return redirect('/login')->with('error', __('Invalid login attempt, please try again.'));
+        }
+
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (InvalidStateException $e) {
@@ -99,7 +120,7 @@ class LoginController extends Controller implements HasMiddleware
         $user = new User;
         $user->username = $this->getUserName($data->email);
         $user->email = $data->email;
-        $user->avatar = $data->avatar;
+        // $user->avatar = $data->avatar;  // removed
         $user->provider_name = $providerName;
         $user->provider_id = $data->id;
         $user->status = 1;

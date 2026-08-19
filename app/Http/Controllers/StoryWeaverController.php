@@ -119,14 +119,17 @@ class StoryWeaverController extends Controller
                 ]
             );
         } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() == 422) {
-                Log::info(
-                    $first_name.' '.$last_name.' was unable to authenticate to StoryWeaver.
-                    Email: '.$user_email.' and user id: '.$user_id.'. Response: 422.'
-                );
-                abort(422, __('Something went wrong while redirecting you to StoryWeaver.'));
-            }
+            $status = $e->getResponse()->getStatusCode();
 
+            Log::info(
+                $first_name.' '.$last_name.' was unable to authenticate to StoryWeaver.
+                Email: '.$user_email.' and user id: '.$user_id.'. Response: '.$status.'.'
+            );
+
+            abort(
+                $status,
+                __('Something went wrong while redirecting you to StoryWeaver.')
+            );
         } catch (TransferException $e) {
             Log::info(
                 $first_name.' '.$last_name.' was unable to authenticate to StoryWeaver. 
@@ -136,6 +139,10 @@ class StoryWeaverController extends Controller
         }
 
         $response_contents = json_decode($response->getBody());
+        if (! $response_contents) {
+            Log::info('StoryWeaver returned an unparsable response body.');
+            abort(500);
+        }
 
         if (
             $response->getStatusCode() == 200
