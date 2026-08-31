@@ -314,7 +314,7 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     // Adding old DDL routes
     Route::get('/user/register', [RegisterController::class, 'showRegistrationForm']);
     Route::get('/user', [LoginController::class, 'showLoginForm']);
-    Route::get('/node/{resourceId}', [ResourceController::class, 'viewPublicResource']);
+    Route::get('/node/{resourceId}', [ResourceController::class, 'viewPublicResource'])->where('resourceId', '[0-9]+');
     Route::get('/user/logout', [LoginController::class, 'logout']);
     Route::get('/user/password', [ForgotPasswordController::class, 'showLinkRequestForm']);
     Route::get('/volunteer', function () {
