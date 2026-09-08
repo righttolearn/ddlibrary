@@ -7,36 +7,3 @@
     color: $primary;
   }
 }
-
-@keyframes wave {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
-
-.new-badge {
-  position: relative;
-  display: inline-flex;
-  width: 10px;
-  height: 10px;
-}
-
-.new-badge .dot {
-  width: 8px;
-  height: 8px;
-  background: #dc3545;
-  border-radius: 50%;
-  position: relative;
-  z-index: 1;
-}
-
-.new-badge .wave {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #dc3545;
-  animation: wave 1.5s ease-out infinite;
-}
-
-.new-badge .wave:nth-child(2) { animation-delay: 0.5s; }
-.new-badge .wave:nth-child(3) { animation-delay: 1s; }

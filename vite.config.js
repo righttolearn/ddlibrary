@@ -31,7 +31,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '../webfonts': path.resolve(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'),
+            '../webfonts': path.resolve(import.meta.dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'),
         },
     },
     optimizeDeps: {

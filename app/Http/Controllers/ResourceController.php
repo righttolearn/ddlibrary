@@ -779,12 +779,11 @@ class ResourceController extends Controller
         }
 
         $translations = $this->resource->getResourceTranslations($translation_id);
-
         if (!$translations) {
             return ['languages_available' => [], 'translations' => null];
         }
 
-        $supportedLocals = array_keys(config('laravellocalization.localesOrder'));
+        $supportedLocals = config('laravellocalization.localesOrder');
 
         $newId = $translations
             ->filter(fn($tr) => in_array($tr->language, $supportedLocals))

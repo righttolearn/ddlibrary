@@ -78,12 +78,6 @@
                         <a class="nav-link d-flex align-items-center gap-1" href="{{ route('threads.index') }}">
                             <i class="ph-fill ph-users-three" style="vertical-align: -2px;"></i>
                             @lang('Community')
-                            <span class="new-badge ms-1" style="vertical-align: top; margin-top: 2px;">
-                                <span class="wave"></span>
-                                <span class="wave"></span>
-                                <span class="wave"></span>
-                                <span class="dot"></span>
-                            </span>
                         </a>
                     </li>
                     <li class="nav-item">
