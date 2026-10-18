@@ -17,7 +17,7 @@
         "@fontsource/noto-kufi-arabic": "^5.2.9",
         "@phosphor-icons/web": "^2.1.2",
         "@popperjs/core": "^2.11.6",
-        "axios": "^1.18.0",
+        "axios": "^1.20.0",
         "bootstrap": "^5.3.6",
         "cropperjs": "^1.6.2",
         "epubjs": "^0.3.93",
