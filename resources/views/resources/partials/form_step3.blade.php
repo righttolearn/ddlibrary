@@ -152,4 +152,30 @@
             </div>
         </div>
     @endif
+
+    @if ($edit && isAdmin())
+        <div class="col-sm-12 col-md-6 mb-4">
+            <label for="review_hours" class="form-label">
+                <strong>@lang('Review hours')</strong>
+            </label>
+            <input class="form-control @error('review_hours') is-invalid @enderror"
+                   id="review_hours" name="review_hours" type="number"
+                   min="0" max="100" step="0.01"
+                   value="{{ old('review_hours', $resource->review_hours) }}"
+                   placeholder="0.00">
+            <small class="form-text text-muted">
+                @lang('Enter up to 100 hours using no more than two decimal places.')
+                @if ($resource->reviewed_at)
+                    <br>
+                    @lang('Reviewed at'): {{ $resource->reviewed_at->format('Y-m-d H:i') }}
+                    @if ($resource->reviewer)
+                        — @lang('Reviewed by'): {{ $resource->reviewer->username }}
+                    @endif
+                @endif
+            </small>
+            @error('review_hours')
+                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
+            @enderror
+        </div>
+    @endif
 </div>
