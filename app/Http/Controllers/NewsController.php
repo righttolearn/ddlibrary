@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
-use App\Traits\SitewidePageViewTrait;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +11,6 @@ use Yajra\Datatables\Datatables;
 
 class NewsController extends Controller
 {
-    use SitewidePageViewTrait;
-
     /**
      * Create a new controller instance.
      *
@@ -55,7 +52,6 @@ class NewsController extends Controller
 
         $news = News::find($newsId);
         abort_unless($news, 404);
-        $this->pageView($request, $news->title);
 
         $translation_id = $news->tnid;
         if ($translation_id) {

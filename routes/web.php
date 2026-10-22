@@ -16,7 +16,6 @@ use App\Http\Controllers\Forum\CategoryController;
 use App\Http\Controllers\Forum\ForumUserController;
 use App\Http\Controllers\Forum\PostController;
 use App\Http\Controllers\Forum\ThreadController;
-use App\Http\Controllers\GlossaryAnalyticsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\GlossarySubjectController;
 use App\Http\Controllers\HomeController;
@@ -26,11 +25,9 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ResourceAnalyticsController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourceFileController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\SitewideAnalyticsController;
 use App\Http\Controllers\StoryWeaverController;
 use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SurveyAnswerController;
@@ -105,6 +102,8 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('admin/contacts/delete/{id}', [ContactController::class, 'delete'])->middleware('admin');
     // Report
     Route::get('admin/reports/impact_report', [ReportController::class, 'impactReport'])->name('impact-report')->middleware('admin');
+    Route::get('admin/reports/ddl', [ReportController::class, 'ddlReport'])->name('ddl-report')->middleware('admin');
+    Route::get('admin/reports/ddl/data', [ReportController::class, 'ddlReportData'])->name('ddl-report.data')->middleware('admin');
     Route::get('admin/reports/ga', [ReportController::class, 'gaReport'])->middleware('admin');
     Route::get('admin/reports/resources', [ReportController::class, 'resourceReport'])->middleware('admin');
     Route::get('admin/reports/resources/subjects', [ReportController::class, 'resourceSubjectReport'])->middleware('admin');
@@ -294,8 +293,8 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     // Analytics
     Route::prefix('admin/analytics')->middleware('admin')->group(function () {
         Route::controller(AnalyticsController::class)->group(function () {
-            Route::get('')->name('analytics-list');
-            Route::post('')->name('analytics');
+            Route::get('', 'index')->name('analytics-list');
+            Route::post('', 'show')->name('analytics');
         });
     });
     // admin, glossary
@@ -341,16 +340,6 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     // Analytics
     Route::prefix('admin/analytics')->middleware('admin')->group(function () {
         Route::get('user', [UserAnalyticsController::class, 'index']);
-        Route::get('resource', [ResourceAnalyticsController::class, 'index']);
-        Route::controller(SitewideAnalyticsController::class)->group(function () {
-            Route::get('sitewide', 'index');
-            Route::get('reports/sitewide', 'view');
-        });
-
-        Route::controller(GlossaryAnalyticsController::class)->group(function () {
-            Route::get('glossary', 'index');
-            Route::get('reports/glossary', 'view');
-        });
     });
 
     Route::controller(PrivacyPolicyController::class)->group(function () {

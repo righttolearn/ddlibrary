@@ -52,6 +52,19 @@
             <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
         @enderror
     </div>
+    @if (isAdmin())
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label for="partner" class="form-label">@lang('Contributing partner')</label>
+            <input class="form-control{{ $errors->has('partner') ? ' is-invalid' : '' }}"
+                   id="partner" name="partner" type="text"
+                   value="{{ old('partner', $resource?->partner ?? '') }}"
+                   data-action="autocomplete"
+                   data-single="true"
+                   data-url="{{ URL::to('resources/attributes/partners') }}"
+                   placeholder="@lang('Search or enter a partner name')">
+            @error('partner') <span class="invalid-feedback"><strong>{{ $message }}</strong></span> @enderror
+        </div>
+    @endif
     <div class="col-sm-12 col-md-6 mb-3">
         <label class="form-label">@lang('This is a work of translation')</label>
         <div class="form-check">

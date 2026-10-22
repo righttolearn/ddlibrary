@@ -69,15 +69,6 @@ DDL Impact
                 <h2><em>{{ $totalSubjects }}</em></h2>
                 <h3>@lang('Subjects')</h3>
             </article>
-            <article>
-                <i class="fas fa-eye fa-3x"></i>
-                <h2><em>{{ $monthlyViews }}</em></h2>
-                <h3>@lang('Views - last 30 days')</h3>
-                <p>@lang('Last updated:') {{ $monthlyViewsTimestamp }}</p>
-                @if(isAdmin())
-                    <p>(<a href="{{ URL::to('/impact/update') }}">@lang('update')</a>)</p>
-                @endif
-            </article>
         </div>
     </section>
 @endsection 

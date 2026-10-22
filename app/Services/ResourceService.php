@@ -60,6 +60,14 @@ class ResourceService
         $resource->language         = $data['language'];
         $resource->resource_file_id = $data['resource_file_id'];
         $resource->status           = $data['published'] ?? 0;
+        if (isAdmin()) {
+            $partner = filled($data['partner'] ?? null)
+                ? preg_replace('/\s+/', ' ', trim($data['partner']))
+                : null;
+            $resource->partner = $partner
+                ? Resource::where('partner', $partner)->value('partner') ?? $partner
+                : null;
+        }
         $resource->user_id          = Auth::id();
         $resource->published_at     = now();
         $resource->save();

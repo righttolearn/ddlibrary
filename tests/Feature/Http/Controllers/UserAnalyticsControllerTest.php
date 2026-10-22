@@ -25,7 +25,7 @@ class UserAnalyticsControllerTest extends TestCase
         $response = $this->get('en/admin/analytics/user');
         $response->assertOk();
         $response->assertViewIs('admin.analytics.users.index');
-        $response->assertViewHas(['roles', 'totalUsersBaseOnGenders', 'top10ActiveUsers', 'totalRegisteredUsers', 'totalUsers', 'totalGoogleUsers', 'totalFacebookUsers']);
+        $response->assertViewHas(['roles', 'totalUsersBaseOnGenders', 'totalRegisteredUsers', 'totalUsers', 'totalGoogleUsers', 'totalFacebookUsers']);
 
     }
 }

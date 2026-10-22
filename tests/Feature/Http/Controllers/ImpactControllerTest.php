@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -24,20 +23,10 @@ class ImpactControllerTest extends TestCase
         $response->assertOk();
         $response->assertViewIs('impact.impact_page');
         $response->assertViewHas('totalResources');
-        $response->assertViewHas('monthlyViews');
         $response->assertViewHas('totalSubjects');
 
         $this->assertNotNull($response->viewData('totalResources'));
         $this->assertNotNull($response->viewData('totalSubjects'));
 
-        $admin = User::factory()->create();
-        $admin->roles()->attach(5);
-
-        $responseUpdate = $this->actingAs($admin)->get('en/impact?update=true');
-        $responseUpdate->assertOk();
-        $responseUpdate->assertViewIs('impact.impact_page');
-        $responseUpdate->assertViewHas('totalResources');
-        $responseUpdate->assertViewHas('monthlyViews');
-        $responseUpdate->assertViewHas('totalSubjects');
     }
 }

@@ -97,27 +97,6 @@
                             </div>
                         </div>
 
-                        {{-- Top 10 active users  --}}
-                        <div class="col-sm-6 col-md-4 col-lg-3">
-                            <div class="card border-secondary mb-3">
-                                <div class="card-header">Top 10 active users </div>
-                                <div class="card-body text-secondary p-2">
-                                    <div class="card-text">
-                                        @forelse ($top10ActiveUsers as $user)
-                                            <div class="d-flex justify-content-between mb-2 rounded bg-light text-dark">
-                                                <div class="p-1 text-capitalize">
-                                                    {{ $loop->iteration }}.
-                                                    {{ $user->first_name }} {{ $user->last_name }}
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <h2 class="alert alert-danger">not available</h2>
-                                        @endforelse
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- Total users based on their roles  --}}
                         <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="card border-secondary mb-3">

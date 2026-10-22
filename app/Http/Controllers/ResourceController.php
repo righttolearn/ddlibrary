@@ -33,7 +33,6 @@ use App\Models\Setting;
 use App\Models\TaxonomyTerm;
 use App\Services\ResourceService;
 use App\Traits\LanguageTrait;
-use App\Traits\SitewidePageViewTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -53,7 +52,7 @@ use Throwable;
 
 class ResourceController extends Controller
 {
-    use LanguageTrait, SitewidePageViewTrait;
+    use LanguageTrait;
 
     /**
      * Create a new controller instance.
@@ -148,8 +147,6 @@ class ResourceController extends Controller
     {
         DDLClearSession();
         $language = $request['language'] ?? null;
-        $this->pageView($request, 'Resource List');
-
         $resource = new Resource;
 
         if ($request->filled('search')) {
@@ -264,11 +261,12 @@ class ResourceController extends Controller
         $comments = ResourceComment::where('resource_id', $resourceId)->published()->get();
         $comments->load('user');
 
-        $this->pageView($request, $resource->title); // TODO: To be deprecated
         $this->resourceViewCounter($request, $resourceId); // TODO: To be deprecated
         Resource::where('id', $resourceId)->increment('views_count');
 
         ['languages_available' => $languages_available, 'translations' => $translations] = $this->resolveAvailableLanguages($resource);
+        $isTranslated = $resource->tnid !== null && $resource->tnid !== $resource->id;
+        $isAdopted = (bool) $resource->primary_tnid;
 
         $ePub = $this->resolveEpubUrl($resource);
 
@@ -278,7 +276,9 @@ class ResourceController extends Controller
             'comments',
             'languages_available',
             'translations',
-            'ePub'
+            'ePub',
+            'isTranslated',
+            'isAdopted'
         );
 
         if ($ePub) {
@@ -429,6 +429,21 @@ class ResourceController extends Controller
         if (! $keyword) {
             return redirect('/home');
         }
+        if ($entity === 'partners') {
+            abort_unless(isAdmin(), 403);
+
+            $records = Resource::query()
+                ->whereNotNull('partner')
+                ->where('partner', '!=', '')
+                ->where('partner', 'like', '%'.$keyword['term'].'%')
+                ->selectRaw('DISTINCT partner AS value')
+                ->orderBy('partner')
+                ->limit(10)
+                ->get();
+
+            return response()->json($records);
+        }
+
         $vid = null;
         if ($entity == 'authors') {
             $vid = 24;

@@ -18,6 +18,168 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
+    public function ddlReport(): View
+    {
+        return view('admin.reports.ddl_resource_report');
+    }
+
+    public function ddlReportData(Request $request): View
+    {
+        $supportedLocales = \LaravelLocalization::getSupportedLocales();
+
+        $validationRules = [
+            'type' => 'required|in:unique_resources,subject_coverage,translated_adopted,partner_contributions',
+            'language' => 'required|in:all,'.implode(',', array_keys($supportedLocales)),
+            'date_from' => 'nullable|required_with:date_to|date_format:Y-m-d',
+            'date_to' => 'nullable|required_with:date_from|date_format:Y-m-d',
+        ];
+
+        if ($request->filled('date_from')) {
+            $validationRules['date_to'] .= '|after_or_equal:date_from';
+        }
+
+        $request->validate($validationRules);
+
+        $type = $request->type;
+        $language = $request->language;
+        $selectedLanguage = $language == 'all' ? null : $language;
+        $languageName = $selectedLanguage ? ($supportedLocales[$selectedLanguage]['name'] ?? $selectedLanguage) : 'All languages';
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if ($type == 'unique_resources') {
+            return $this->uniqueResourcesReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo);
+        } elseif ($type == 'translated_adopted') {
+            return $this->translatedAdoptedReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo);
+        } elseif ($type == 'partner_contributions') {
+            return $this->partnerContributionsReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo);
+        }
+
+        return $this->subjectCoverageReport($type, $selectedLanguage, $dateFrom, $dateTo, $supportedLocales);
+    }
+
+    private function uniqueResourcesReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo): View
+    {
+        $resource = new Resource;
+        $totalResources = $this->applyDdlFilters(Resource::query(), $selectedLanguage, $dateFrom, $dateTo)->count();
+        $resourcesByLanguage = $resource->totalResourcesByLanguage($selectedLanguage, $dateFrom, $dateTo);
+        $resourcesBySubject = $resource->totalResourcesBySubject($selectedLanguage, $dateFrom, $dateTo);
+        $resourcesByType = $resource->totalResourcesByType($selectedLanguage, $dateFrom, $dateTo);
+
+        return view('admin.reports.ddl_resource_report_data', compact('type', 'languageName', 'totalResources', 'resourcesByLanguage', 'resourcesBySubject', 'resourcesByType'));
+    }
+
+    private function translatedAdoptedReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo): View
+    {
+        $translated = Resource::whereNotNull('tnid')->whereColumn('tnid', '!=', 'id');
+        $translated = $this->applyDdlFilters($translated, $selectedLanguage, $dateFrom, $dateTo);
+
+        $adopted = Resource::where('primary_tnid', true);
+        $adopted = $this->applyDdlFilters($adopted, $selectedLanguage, $dateFrom, $dateTo);
+
+        $translatedCount = (clone $translated)->count();
+        $adoptedCount = (clone $adopted)->count();
+        $translatedUtilization = $this->percentage($translatedCount, (clone $translated)->where('views_count', '>', 0)->count());
+        $adoptedUtilization = $this->percentage($adoptedCount, (clone $adopted)->where('views_count', '>', 0)->count());
+
+        $translatedLanguagePairs = DB::table('resources AS translated')
+            ->join('resources AS original', 'original.id', '=', 'translated.tnid')
+            ->whereColumn('translated.id', '!=', 'translated.tnid');
+        $translatedLanguagePairs = $this->applyDdlFilters($translatedLanguagePairs, $selectedLanguage, $dateFrom, $dateTo, 'translated');
+        $translatedLanguagePairs = $translatedLanguagePairs
+            ->selectRaw('original.language AS from_language, translated.language AS to_language, COUNT(DISTINCT translated.id) AS total')
+            ->groupBy('original.language', 'translated.language')
+            ->get();
+
+        $adoptedLanguagePairs = DB::table('resources AS original')
+            ->join('resources AS translated', 'translated.tnid', '=', 'original.id')
+            ->where('original.primary_tnid', true)
+            ->whereColumn('translated.id', '!=', 'translated.tnid');
+        $adoptedLanguagePairs = $this->applyDdlFilters($adoptedLanguagePairs, $selectedLanguage, $dateFrom, $dateTo, 'original');
+        $adoptedLanguagePairs = $adoptedLanguagePairs
+            ->selectRaw('original.language AS from_language, translated.language AS to_language, COUNT(DISTINCT original.id) AS total')
+            ->groupBy('original.language', 'translated.language')
+            ->get();
+
+        return view('admin.reports.ddl_resource_report_data', compact(
+            'type',
+            'languageName',
+            'translatedCount',
+            'adoptedCount',
+            'translatedUtilization',
+            'adoptedUtilization',
+            'translatedLanguagePairs',
+            'adoptedLanguagePairs'
+        ));
+    }
+
+    private function partnerContributionsReport($type, $languageName, $selectedLanguage, $dateFrom, $dateTo): View
+    {
+        $partnerResources = Resource::whereNotNull('partner')->where('partner', '!=', '');
+        $partnerResources = $this->applyDdlFilters($partnerResources, $selectedLanguage, $dateFrom, $dateTo);
+        $partnerCount = (clone $partnerResources)->count();
+        $partnerUtilization = $this->percentage($partnerCount, (clone $partnerResources)->where('views_count', '>', 0)->count());
+        $partners = (clone $partnerResources)
+            ->selectRaw('partner, COUNT(*) AS total, SUM(CASE WHEN views_count > 0 THEN 1 ELSE 0 END) AS utilized')
+            ->groupBy('partner')
+            ->orderByDesc('total')
+            ->get()
+            ->each(function ($partner) {
+                $partner->utilization = $this->percentage($partner->total, $partner->utilized);
+            });
+
+        return view('admin.reports.ddl_resource_report_data', compact(
+            'type',
+            'languageName',
+            'partnerCount',
+            'partnerUtilization',
+            'partners'
+        ));
+    }
+
+    private function subjectCoverageReport($type, $selectedLanguage, $dateFrom, $dateTo, $supportedLocales): View
+    {
+        $resource = new Resource;
+        $languages = $selectedLanguage ? [$selectedLanguage] : array_keys($supportedLocales);
+        $coverageRows = collect();
+
+        foreach ($languages as $code) {
+            $subjects = $resource->totalResourcesBySubject($code, $dateFrom, $dateTo);
+            $totalSubjects = TaxonomyTerm::where('vid', 8)->where('language', $code)->count();
+            $coveredSubjects = $subjects->where('total', '>', 10)->count();
+            $coverageRows->push((object) [
+                'language' => $supportedLocales[$code]['name'] ?? $code,
+                'totalSubjects' => $totalSubjects,
+                'coveredSubjects' => $coveredSubjects,
+                'coverage' => $this->percentage($totalSubjects, $coveredSubjects),
+            ]);
+        }
+
+        return view('admin.reports.ddl_resource_report_data', compact('type', 'coverageRows'));
+    }
+
+    private function applyDdlFilters($query, $selectedLanguage, $dateFrom, $dateTo, $table = null)
+    {
+        $languageColumn = $table ? $table.'.language' : 'language';
+        $dateColumn = $table ? $table.'.created_at' : 'created_at';
+
+        return $query
+            ->when($selectedLanguage, function ($query) use ($selectedLanguage, $languageColumn) {
+                return $query->where($languageColumn, $selectedLanguage);
+            })
+            ->when($dateFrom, function ($query) use ($dateFrom, $dateColumn) {
+                return $query->whereDate($dateColumn, '>=', $dateFrom);
+            })
+            ->when($dateTo, function ($query) use ($dateTo, $dateColumn) {
+                return $query->whereDate($dateColumn, '<=', $dateTo);
+            });
+    }
+
+    private function percentage($total, $count): float
+    {
+        return $total ? round(($count / $total) * 100, 1) : 0;
+    }
+
     private static function subjectSort($a, $b): int
     {
         return $a['count'] <=> $b['count'];
