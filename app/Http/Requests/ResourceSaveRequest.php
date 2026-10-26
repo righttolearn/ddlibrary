@@ -13,7 +13,7 @@ class ResourceSaveRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'title'                     => 'required|string|max:255',
             'author'                    => 'nullable|string|max:255',
             'publisher'                 => 'nullable|string|max:255',
@@ -40,6 +40,12 @@ class ResourceSaveRequest extends FormRequest
             'creative_commons_other'    => 'nullable|integer|exists:taxonomy_term_data,id',
             'published'                 => 'nullable|boolean',
         ];
+
+        if (isAdmin() && $this->route('resourceId')) {
+            $rules['review_hours'] = ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:100'];
+        }
+
+        return $rules;
     }
 
     public function messages(): array

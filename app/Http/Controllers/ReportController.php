@@ -11,6 +11,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Analytics\Period;
@@ -67,6 +68,59 @@ class ReportController extends Controller
         $supported_locales = \LaravelLocalization::getSupportedLocales();
 
         return view('admin.reports.resource_reports', compact('supported_locales'));
+    }
+
+    public function resourceReviewReport(Request $request): Factory|View|Application
+    {
+        $filters = $request->validate([
+            'title' => ['nullable', 'string', 'max:191'],
+            'language' => ['nullable', 'string', 'max:12'],
+            'date_from' => ['nullable', 'date', 'required_with:date_to'],
+            'date_to' => ['nullable', 'date', 'required_with:date_from', 'after_or_equal:date_from'],
+            'review_status' => ['nullable', 'in:reviewed,unreviewed'],
+        ]);
+
+        $query = Resource::with('reviewer:id,username')
+            ->select(['id', 'title', 'language', 'reviewed_at', 'review_hours', 'reviewed_by'])
+            ->when($filters['title'] ?? null, function ($query, $title) {
+                return $query->where('title', 'like', '%'.$title.'%');
+            })
+            ->when($filters['language'] ?? null, function ($query, $language) {
+                return $query->where('language', $language);
+            })
+            ->when(isset($filters['date_from'], $filters['date_to']), function ($query) use ($filters) {
+                return $query->whereBetween('reviewed_at', [
+                    $filters['date_from'].' 00:00:00',
+                    $filters['date_to'].' 23:59:59',
+                ]);
+            })
+            ->when(($filters['review_status'] ?? null) === 'reviewed', function ($query) {
+                return $query->whereNotNull('reviewed_at');
+            })
+            ->when(($filters['review_status'] ?? null) === 'unreviewed', function ($query) {
+                return $query->whereNull('reviewed_at');
+            });
+
+        $total_review_hours = (clone $query)->sum('review_hours');
+        $resources = $query->orderByDesc('reviewed_at')->orderByDesc('id')->paginate(20)->withQueryString();
+        $languages = \LaravelLocalization::getSupportedLocales();
+
+        return view('admin.reports.resource_reviews', compact('resources', 'languages', 'total_review_hours'));
+    }
+
+    public function updateResourceReview(Request $request, int $resourceId): RedirectResponse
+    {
+        $validatedData = $request->validate([
+            'review_hours' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:100'],
+        ]);
+
+        $resource = Resource::findOrFail($resourceId);
+        $resource->review_hours = $validatedData['review_hours'];
+        $resource->reviewed_at = $resource->reviewed_at ?? now();
+        $resource->reviewed_by = $request->user()->id;
+        $resource->save();
+
+        return back()->with('success', 'Resource review hours saved successfully.');
     }
 
     public function resourceSubjectReport(Request $request): BinaryFileResponse

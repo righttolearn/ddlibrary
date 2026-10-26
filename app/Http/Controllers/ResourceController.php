@@ -312,6 +312,7 @@ class ResourceController extends Controller
                 'copyrightHolder',
                 'sharePermissions',
                 'keywords',
+                'reviewer:id,username',
             ])->findOrFail($resourceId)
             : null;
 

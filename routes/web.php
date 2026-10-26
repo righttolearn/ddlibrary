@@ -109,6 +109,8 @@ Route::prefix(LaravelLocalization::setLocale())->middleware('localeSessionRedire
     Route::get('admin/reports/resources', [ReportController::class, 'resourceReport'])->middleware('admin');
     Route::get('admin/reports/resources/subjects', [ReportController::class, 'resourceSubjectReport'])->middleware('admin');
     Route::get('admin/reports/languages', [ReportController::class, 'resourceLanguageReport'])->middleware('admin');
+    Route::get('admin/reports/resource-reviews', [ReportController::class, 'resourceReviewReport'])->name('resource-review-report')->middleware('admin');
+    Route::post('admin/reports/resource-reviews/{resourceId}', [ReportController::class, 'updateResourceReview'])->name('resource-review-update')->middleware('admin');
     // Downloads
     Route::get('admin/reports/downloads', [DownloadController::class, 'index'])->middleware('admin');
     Route::post('admin/reports/downloads', [DownloadController::class, 'index'])->name('downloads')->middleware('admin');
