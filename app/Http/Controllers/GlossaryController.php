@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\GlossaryPageViewStatusEnum;
 use App\Models\Glossary;
 use App\Models\GlossarySubject;
-use App\Traits\GlossaryPageViewTrait;
 use BladeView;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
@@ -17,8 +15,6 @@ use Illuminate\View\View;
 
 class GlossaryController extends Controller
 {
-    use GlossaryPageViewTrait;
-
     /**
      * Display a listing of the resource.
      *
@@ -27,7 +23,6 @@ class GlossaryController extends Controller
      */
     public function index(Request $request): View
     {
-        $this->pageView($request, GlossaryPageViewStatusEnum::View, 'Glossary');
         $glossary_flagged = null;
 
         if ($request->filled('text')) {
@@ -98,8 +93,6 @@ class GlossaryController extends Controller
             $glossary->flagged_for_review = true;
         }
         $glossary->save();
-
-        $this->pageView($request, GlossaryPageViewStatusEnum::Create, 'Create Glossary');
 
         return redirect(route('glossary'))->with('status', __('Glossary item added successfully!'));
 

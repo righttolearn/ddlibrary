@@ -6,7 +6,6 @@ use App\Mail\ContactPage;
 use App\Models\Contact;
 use App\Models\Setting;
 use App\Rules\RecaptchaRule;
-use App\Traits\SitewidePageViewTrait;
 use BladeView;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
@@ -20,8 +19,6 @@ use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    use SitewidePageViewTrait;
-
     /**
      * Display a listing of the resource.
      *
@@ -65,7 +62,6 @@ class ContactController extends Controller
      */
     public function create(Request $request): View
     {
-        $this->pageView($request, 'Contact us');
 
         $email = '';
         $fullname = '';

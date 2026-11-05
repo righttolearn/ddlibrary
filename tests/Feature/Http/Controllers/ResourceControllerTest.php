@@ -57,7 +57,7 @@ class ResourceControllerTest extends TestCase
         $admin->roles()->attach(5);
         $this->actingAs($admin);
 
-        $resource = Resource::factory()->create();
+        Resource::factory()->create(['partner' => 'Example School']);
 
         // Test for authors
         $response = $this->get('en/resources/attributes/authors?term=sample');
@@ -65,6 +65,11 @@ class ResourceControllerTest extends TestCase
         $response->assertJsonStructure([
             '*' => ['id', 'name'],
         ]);
+
+        // Test for partners
+        $response = $this->get('en/resources/attributes/partners?term=school');
+        $response->assertOk();
+        $response->assertJsonFragment(['value' => 'Example School']);
 
         // Test for publishers
         $response = $this->get('en/resources/attributes/publishers?term=sample');
@@ -140,11 +145,13 @@ class ResourceControllerTest extends TestCase
         $learningType = TaxonomyTerm::where('vid', 7)->first();
         $educationalUse = TaxonomyTerm::where('vid', 25)->first();
         $level = TaxonomyTerm::where('vid', 13)->first();
+        Resource::factory()->create(['partner' => 'Example NGO']);
 
         $response = $this->post('en/resources/save', [
             'title' => 'Test Resource',
             'author' => 'Test Author',
             'publisher' => 'Test Publisher',
+            'partner' => ' example ngo ',
             'language' => 'en',
             'abstract' => 'Test abstract content',
             'resource_file_id' => $resourceFile->id,
@@ -162,6 +169,7 @@ class ResourceControllerTest extends TestCase
             'title' => 'Test Resource',
             'language' => 'en',
             'user_id' => $user->id,
+            'partner' => 'Example NGO',
         ]);
 
         $resource = Resource::where('title', 'Test Resource')->first();
@@ -483,6 +491,35 @@ class ResourceControllerTest extends TestCase
         $response->assertViewHas('relatedItems');
         $response->assertViewHas('comments', $resourceComments);
         $response->assertViewHas('translations');
+        $response->assertViewHas('isTranslated', false);
+        $response->assertViewHas('isAdopted', false);
+    }
+
+    #[Test]
+    public function translated_and_adopted_resources_are_sent_to_matomo(): void
+    {
+        $this->refreshApplicationWithLocale('en');
+
+        $adoptedResource = Resource::factory()->create(['primary_tnid' => true]);
+        $adoptedResource->tnid = $adoptedResource->id;
+        $adoptedResource->save();
+
+        $translatedResource = Resource::factory()->create([
+            'tnid' => $adoptedResource->id,
+            'primary_tnid' => false,
+        ]);
+
+        $translatedResponse = $this->get('en/resource/'.$translatedResource->id);
+        $translatedResponse->assertOk();
+        $translatedResponse->assertViewHas('isTranslated', true);
+        $translatedResponse->assertViewHas('isAdopted', false);
+        $translatedResponse->assertSee("setCustomDimension', 1, 'yes", false);
+
+        $adoptedResponse = $this->get('en/resource/'.$adoptedResource->id);
+        $adoptedResponse->assertOk();
+        $adoptedResponse->assertViewHas('isTranslated', false);
+        $adoptedResponse->assertViewHas('isAdopted', true);
+        $adoptedResponse->assertSee("setCustomDimension', 2, 'yes", false);
     }
 
     #[Test]

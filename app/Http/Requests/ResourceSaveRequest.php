@@ -17,6 +17,7 @@ class ResourceSaveRequest extends FormRequest
             'title'                     => 'required|string|max:255',
             'author'                    => 'nullable|string|max:255',
             'publisher'                 => 'nullable|string|max:255',
+            'partner'                   => 'nullable|string|max:255',
             'language'                  => 'required|string|max:10',
             'has_translator'            => 'nullable|boolean',
             'translator'                => 'nullable|required_if:has_translator,1|string|max:255',

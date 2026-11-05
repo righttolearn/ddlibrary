@@ -100,14 +100,10 @@
     <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Reports</h6>
         <a class="collapse-item" href="{{ URL::to('admin/reports/impact_report') }}">Impact Report</a>
+        <a class="collapse-item" href="{{ route('ddl-report') }}">DDL Resource Reports</a>
         <a class="collapse-item" href="{{ URL::to('admin/reports/downloads') }}">Downloads</a>
-        <a class="collapse-item" href="{{ URL::to('admin/analytics/reports/glossary') }}">Glossary View</a>
-        <a class="collapse-item" href="{{ URL::to('admin/analytics/reports/sitewide') }}">Resource View</a>
         <div class="collapse-divider"></div>
         <h6 class="collapse-header">Analytics</h6>
-        <a class="collapse-item" href="{{ URL::to('admin/analytics/sitewide?is_bot=2') }}">Sitewide Analytics</a>
-        <a class="collapse-item" href="{{ URL::to('admin/analytics/resource?is_bot=2') }}">Resource Analytics</a>
-        <a class="collapse-item" href="{{ URL::to('admin/analytics/glossary?is_bot=2') }}">Glossary Analytics</a>
         <a class="collapse-item" href="{{ URL::to('admin/analytics/user') }}">User Analytics</a>
         <a class="collapse-item" href="{{ URL::to('admin/analytics') }}">DDL Analytics</a>
     </div>
