@@ -3,7 +3,7 @@ import 'jquery-ui/ui/widgets/autocomplete';
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.bootstrap5.css';
 
-window.bringMeAttr = function (id, url)
+window.bringMeAttr = function (id, url, single = false)
 {
     $( "#"+id )
         // don't navigate away from the field on tab when selecting an item
@@ -16,12 +16,12 @@ window.bringMeAttr = function (id, url)
         .autocomplete({
             source: function( request, response ) {
                 $.getJSON( url, {
-                    term: extractLast( request.term )
+                    term: single ? request.term : extractLast(request.term)
                 }, response );
             },
             search: function() {
                 // custom minLength
-                var term = extractLast( this.value );
+                var term = single ? this.value : extractLast(this.value);
                 if ( term.length < 2 ) {
                     return false;
                 }
@@ -31,6 +31,11 @@ window.bringMeAttr = function (id, url)
                 return false;
             },
             select: function( event, ui ) {
+                if (single) {
+                    this.value = ui.item.value;
+                    return false;
+                }
+
                 var terms = split( this.value );
                 // remove the current input
                 terms.pop();
@@ -98,7 +103,7 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-action="autocomplete"]').forEach(input => {
-        bringMeAttr(input.id, input.dataset.url);
+        bringMeAttr(input.id, input.dataset.url, input.dataset.single === 'true');
     });
 
     // Translation toggle

@@ -46,6 +46,15 @@
       @auth
       _paq.push(['setUserId', '{{ hash('sha256', auth()->id() . config('app.key')) }}']);
       @endauth
+      @if($isTranslated ?? false)
+      _paq.push(['setCustomDimension', 1, 'yes']);
+      @endif
+      @if($isAdopted ?? false)
+      _paq.push(['setCustomDimension', 2, 'yes']);
+      @endif
+      @if($partner ?? false)
+      _paq.push(['setCustomDimension', 3, @json($partner)]);
+      @endif
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {

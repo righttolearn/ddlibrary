@@ -8,7 +8,7 @@
                     <a href="{{ URL::to('admin') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item active">Reports</li>
-                <li class="breadcrumb-item active">Resource Analytics</li>
+                <li class="breadcrumb-item active">Resource Reports</li>
             </ol>
             <div class="card mb-3 col-lg-8">
                 <div class="card-header">
