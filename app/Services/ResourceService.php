@@ -35,6 +35,7 @@ class ResourceService
     {
         return DB::transaction(function () use ($data, $resourceId) {
             $resource = $this->saveResource($data, $resourceId);
+            $this->saveReview($resource, $data, $resourceId);
             $this->saveAttachments($resource, $data);
             $this->saveSubjectAreas($resource, $data);
             $this->saveKeywords($resource, $data);
@@ -75,6 +76,27 @@ class ResourceService
             ->update(['resource_id' => $resource->id]);
 
         return $resource;
+    }
+
+    private function saveReview(Resource $resource, array $data, ?int $resourceId): void
+    {
+        if (!$resourceId || !isAdmin() || !array_key_exists('review_hours', $data) || $data['review_hours'] === null) {
+            return;
+        }
+
+        $reviewHours = number_format((float) $data['review_hours'], 2, '.', '');
+        $currentReviewHours = $resource->review_hours === null
+            ? null
+            : number_format((float) $resource->review_hours, 2, '.', '');
+
+        if ($reviewHours === $currentReviewHours && $resource->reviewed_by !== null) {
+            return;
+        }
+
+        $resource->review_hours = $reviewHours;
+        $resource->reviewed_at = $resource->reviewed_at ?? now();
+        $resource->reviewed_by = Auth::id();
+        $resource->save();
     }
 
     private function saveAttachments(Resource $resource, array $data): void

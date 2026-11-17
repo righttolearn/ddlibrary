@@ -31,6 +31,14 @@ class Resource extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'reviewed_at' => 'datetime',
+            'review_hours' => 'decimal:2',
+        ];
+    }
+
     protected static $logAttributes = ['*'];
 
     public function levels(): BelongsToMany
@@ -131,6 +139,11 @@ class Resource extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     #[Scope]

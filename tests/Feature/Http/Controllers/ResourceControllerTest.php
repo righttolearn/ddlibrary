@@ -190,6 +190,7 @@ class ResourceControllerTest extends TestCase
         $response->assertViewIs('resources.resource_form');
         $response->assertViewHas('edit', true);
         $response->assertViewHas('resource');
+        $response->assertSee('name="review_hours"', false);
     }
 
 
@@ -222,6 +223,7 @@ class ResourceControllerTest extends TestCase
             'level' => [$level->id],
             'resource_rights' => 'translation',
             'copyright_holder' => 'Updated Copyright Holder',
+            'review_hours' => '2.50',
         ]);
 
         $response->assertRedirect();
@@ -230,7 +232,11 @@ class ResourceControllerTest extends TestCase
             'id' => $resource->id,
             'title' => 'Updated Resource Title',
             'language' => 'en',
+            'review_hours' => '2.50',
+            'reviewed_by' => $user->id,
         ]);
+
+        $this->assertNotNull($resource->fresh()->reviewed_at);
 
         $this->assertDatabaseHas('resource_translation_rights', [
             'resource_id' => $resource->id,
